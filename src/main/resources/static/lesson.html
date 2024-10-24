@@ -191,31 +191,168 @@
 <body>
     <div class="header">
         <h1>Lesson Management System</h1>
+        <button onclick="window.location.href='login.html'" style="position: absolute; top: 50px; right: 20px;" class="hide-content-button">
+            Logout
+        </button>
+        <button onclick="window.location.href='landing.html'" style="position: absolute; top: 20px; right: 20px;" class="hide-content-button">
+            Home
+        </button>
+    </div>
+
+    <div class="content-buttons" style="margin: 20px 0; display: flex; gap: 10px;">
+        <button class="hide-content-button active" onclick="showSection('searchLessons')">Search Lessons</button>
+        <button class="hide-content-button" onclick="showSection('addLesson')">Add New Lesson</button>
+        <button class="hide-content-button" onclick="showSection('updateLesson')">Update Lesson</button>
+        <button class="hide-content-button" onclick="showSection('deleteLesson')">Delete Lesson</button>
     </div>
 
     <div id="searchLessons" class="container">
         <h2>Search Lessons</h2>
-        <input type="text" id="subject" placeholder="Subject">
-        <input type="text" id="topic" placeholder="Topic">
-        <input type="number" id="fromPupilId" placeholder="From Pupil ID">
-        <input type="number" id="toPupilId" placeholder="To Pupil ID">
-        <input type="number" id="page" placeholder="Page" value="1">
-        <input type="number" id="count" placeholder="Count" value="50">
-        <select id="sort">
-            <option value="id">ID</option>
-            <option value="subject">Subject</option>
-            <option value="topic">Topic</option>
-        </select>
-        <select id="sortDirection">
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-        </select>
-        <button onclick="searchLessons()">Search</button>
-        <div id="searchResults"></div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+            <div style="display: flex; flex-direction: column;">
+                <label for="subject">Subject</label>
+                <input type="text" id="subject" placeholder="Enter subject name">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="topic">Topic</label>
+                <input type="text" id="topic" placeholder="Enter lesson topic">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label>Pupil ID Range</label>
+                <div style="display: flex; gap: 0.5rem;">
+                    <label for="fromPupilId"></label><input type="number" id="fromPupilId" placeholder="From" style="flex: 1;">
+                    <label for="toPupilId"></label><input type="number" id="toPupilId" placeholder="To" style="flex: 1;">
+                </div>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem;">
+            <div style="display: flex; flex-direction: column;">
+                <label>Sort Options</label>
+                <div style="display: flex; gap: 0.5rem;">
+                    <label for="sort"></label><select id="sort" style="flex: 1;">
+                        <option value="id">ID</option>
+                        <option value="subject">Subject</option>
+                        <option value="topic">Topic</option>
+                    </select>
+                    <label for="sortDirection"></label><select id="sortDirection" style="flex: 1;">
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem; align-items: flex-end;">
+                <div style="display: flex; gap: 0.5rem;">
+                    <div style="display: flex; flex-direction: column;">
+                        <label for="page">Page</label>
+                        <input type="number" id="page" value="1" min="1" style="width: 80px;">
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <label for="count">Per Page</label>
+                        <input type="number" id="count" value="50" min="1" style="width: 80px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="searchLessons()" class="hide-content-button" style="margin-top: 1rem;">Search Lessons</button>
+        <div id="searchResults" style="margin-top: 1rem;"></div>
     </div>
 
+    <div id="addLesson" class="container" style="display: none;">
+        <h2>Add New Lesson</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+            <div style="display: flex; flex-direction: column;">
+                <label for="newSubject">Subject</label>
+                <input type="text" id="newSubject" placeholder="Enter subject name">
+            </div>
 
-    <button onclick="logout()" style="position: fixed; top: 10px; right: 10px;">Logout</button>
+            <div style="display: flex; flex-direction: column;">
+                <label for="newTopic">Topic</label>
+                <input type="text" id="newTopic" placeholder="Enter lesson topic">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="newPupilId">Pupil ID</label>
+                <input type="number" id="newPupilId" placeholder="Enter pupil ID">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="newActivityType">Activity Type</label>
+                <select id="newActivityType">
+                    <option value="Classroom">Frontal lecture in class</option>
+                    <option value="Computerized">A computerized class</option>
+                    <option value="GroupWork">Group discussion</option>
+                    <option value="OutSide">Lesson outside the classroom</option>
+                    <option value="Remote">Online lesson</option>
+                    <option value="Emotional">Based on personality traits</option>
+                    <option value="Reinforcement">Based on interests</option>
+                </select>
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="newKnownGame">Game Type</label>
+                <select id="newKnownGame">
+                    <option value="Hangman">Hangman</option>
+                    <option value="Memory">Memory</option>
+                    <option value="Charades">Charades</option>
+                    <option value="Bingo">Bingo</option>
+                    <option value="ScavengerHunt">Scavenger Hunt</option>
+                </select>
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="newImageDescription">Image Description</label>
+                <input type="text" id="newImageDescription" placeholder="Enter image description">
+            </div>
+        </div>
+        <button onclick="addLesson()" class="hide-content-button" style="margin-top: 1rem;">Add Lesson</button>
+        <div id="addLessonResult" style="margin-top: 1rem;"></div>
+        <div id="taskStatus" style="margin-top: 1rem;"></div>
+        <div id="generatedLessonDisplay" style="margin-top: 2rem;"></div>
+    </div>
+
+    <div id="updateLesson" class="container" style="display: none;">
+        <h2>Update Lesson</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+            <div style="display: flex; flex-direction: column;">
+                <label for="updateLessonId">Lesson ID</label>
+                <input type="number" id="updateLessonId" placeholder="Enter lesson ID">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="updateSubject">Subject</label>
+                <input type="text" id="updateSubject" placeholder="Enter subject name">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="updateTopic">Topic</label>
+                <input type="text" id="updateTopic" placeholder="Enter lesson topic">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="updatePupilId">Pupil ID</label>
+                <input type="number" id="updatePupilId" placeholder="Enter pupil ID">
+            </div>
+        </div>
+        <button onclick="updateLesson()" class="hide-content-button" style="margin-top: 1rem;">Update Lesson</button>
+        <div id="updateLessonResult" style="margin-top: 1rem;"></div>
+    </div>
+
+    <div id="deleteLesson" class="container" style="display: none;">
+        <h2>Delete Lesson</h2>
+        <div style="display: flex; gap: 1rem; align-items: flex-end;">
+            <div style="display: flex; flex-direction: column;">
+                <label for="deleteLessonId">Lesson ID</label>
+                <input type="number" id="deleteLessonId" placeholder="Enter lesson ID">
+            </div>
+            <button onclick="deleteLesson()" class="hide-content-button">Delete Lesson</button>
+        </div>
+        <div id="deleteLessonResult" style="margin-top: 1rem;"></div>
+    </div>
 
     <script>
         const API_BASE_URL = '/api/pupils/lessons';
@@ -429,6 +566,185 @@
             }
         }
 
+        function displaySingleLesson(lesson, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+
+            // Create the main lesson info card
+            const lessonCard = document.createElement('div');
+            lessonCard.className = 'lesson-table';
+
+            // Create the header row with lesson details
+            const headerTable = document.createElement('table');
+            headerTable.className = 'lesson-table';
+
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            ['ID', 'Created At', 'Subject', 'Topic', 'Game Type', 'Plan Activity', 'Image Description', 'Pupil ID', 'Actions'].forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            headerTable.appendChild(thead);
+
+            // Create the body row with lesson data
+            const tbody = document.createElement('tbody');
+            const dataRow = document.createElement('tr');
+
+            // Add regular cells
+            [
+                lesson.id,
+                lesson.createdat,
+                lesson.subject,
+                lesson.topic,
+                lesson.gametype,
+                lesson.planactivity,
+                lesson.imagedescription,
+                lesson.pupilid
+            ].forEach(text => {
+                const td = document.createElement('td');
+                td.textContent = text || 'N/A';
+                dataRow.appendChild(td);
+            });
+
+            // Add actions cell with content buttons
+            const actionsCell = document.createElement('td');
+            const contentButtons = document.createElement('div');
+            contentButtons.className = 'content-buttons';
+
+            ['Image', 'Game', 'Plan'].forEach(contentType => {
+                const button = document.createElement('button');
+                button.className = 'content-button';
+                button.textContent = `Display ${contentType}`;
+                button.onclick = () => showSingleLessonContent(lesson, contentType.toLowerCase());
+                contentButtons.appendChild(button);
+            });
+
+            actionsCell.appendChild(contentButtons);
+            dataRow.appendChild(actionsCell);
+            tbody.appendChild(dataRow);
+
+            // Add content row (initially hidden)
+            const contentRow = document.createElement('tr');
+            contentRow.id = `single-content-row-${lesson.id}`;
+            contentRow.style.display = 'none';
+            const contentCell = document.createElement('td');
+            contentCell.colSpan = 9;
+            contentRow.appendChild(contentCell);
+            tbody.appendChild(contentRow);
+
+            headerTable.appendChild(tbody);
+            lessonCard.appendChild(headerTable);
+            container.appendChild(lessonCard);
+        }
+
+        function showSingleLessonContent(lesson, contentType) {
+            const contentRow = document.getElementById(`single-content-row-${lesson.id}`);
+            const contentCell = contentRow.firstChild;
+
+            contentCell.innerHTML = `
+        <div class="content-section">
+            <div class="content-header">
+                <h4>${contentType.charAt(0).toUpperCase() + contentType.slice(1)} Content</h4>
+                <button class="hide-content-button" onclick="hideSingleLessonContent(${lesson.id})">Hide Content</button>
+            </div>
+            <div class="content-body">
+                ${getContentByType(lesson, contentType)}
+            </div>
+        </div>
+    `;
+
+            contentRow.style.display = 'table-row';
+        }
+
+        function hideSingleLessonContent(lessonId) {
+            const contentRow = document.getElementById(`single-content-row-${lessonId}`);
+            if (contentRow) {
+                contentRow.style.display = 'none';
+            }
+        }
+
+        // Function to be called after lesson generation completes
+        async function displayGeneratedLesson(pupilId, lessonId, containerId) {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/${pupilId}/${lessonId}/display`);
+                displaySingleLesson(response.data, containerId);
+            } catch (error) {
+                handleError(error, containerId, 'Error fetching generated lesson');
+            }
+        }
+
+        // Usage example in your task status checker:
+        async function checkTaskStatus(taskId, containerId) {
+            try {
+                const response = await fetch(`/api/lessons/status/${taskId}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    if (data.status === "processing") {
+                        // Continue checking status
+                        setTimeout(() => checkTaskStatus(taskId, containerId), 2000);
+                        document.getElementById('taskStatus').textContent = "Processing...";
+                    } else {
+                        // Task completed
+                        document.getElementById('taskStatus').textContent = "Task completed!";
+                        // Display the generated lesson
+                        if (data.pupilId && data.id) {
+                            await displayGeneratedLesson(data.pupilId, data.id, containerId);
+                        }
+                    }
+                } else {
+                    document.getElementById('taskStatus').textContent = "Error checking status";
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                handleError(new Error("Error checking status"), 'taskStatus', "Exception while processing task")
+                document.getElementById('taskStatus').textContent = "Error checking status";
+            }
+        }
+
+        // Update your addLesson function to include the result container:
+        async function addLesson() {
+            const pupilId = document.getElementById('newPupilId').value;
+            const subject = document.getElementById('newSubject').value;
+            const topic = document.getElementById('newTopic').value;
+            const activityType = document.getElementById('newActivityType').value;
+            const knownGame = document.getElementById('newKnownGame').value;
+            const imageDescription = document.getElementById('newImageDescription').value;
+
+            const lessonData = {
+                subject: subject,
+                topic: topic
+            };
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/${pupilId}/lessons?activityType=${activityType}&knownGame=${knownGame}&imageDescription=${imageDescription}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${jwtToken}`
+                    },
+                    body: JSON.stringify(lessonData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('addLessonResult').textContent = 'Lesson generation started';
+                    // Start checking task status with the result container ID
+                    checkTaskStatus(data.taskId, 'generatedLessonDisplay');
+                } else {
+                    document.getElementById('addLessonResult').textContent = `Error: ${data.message || 'Failed to add lesson'}`;
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('addLessonResult').textContent = 'Error adding lesson';
+            }
+        }
+
+
         function handleError(error, resultElementId, defaultMessage) {
             console.error(defaultMessage, error);
             let message = defaultMessage;
@@ -437,7 +753,7 @@
                 switch (error.response.status) {
                     case 401:
                         alert('Your session has expired. Redirecting to login page.');
-                        window.location.href = 'index.html';
+                        window.location.href = 'login.html';
                         return;
                     case 409:
                         message = 'A conflict occurred. The resource might already exist.';
@@ -465,6 +781,24 @@
             }
         }
 
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.container').forEach(container => {
+                container.style.display = 'none';
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
+
+            // Update active button
+            document.querySelectorAll('.hide-content-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Show search section by default
+        document.getElementById('searchLessons').style.display = 'block';
     </script>
 </body>
 </html>

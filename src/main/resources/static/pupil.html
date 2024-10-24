@@ -56,13 +56,6 @@
         }
 
         /* Table Styles - Combined for all tables */
-        .pupil-table,
-        .search-results-table,
-        .lesson-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 1em;
-        }
 
         .pupil-table th,
         .pupil-table td,
@@ -119,16 +112,6 @@
             margin-top: 10px;
         }
 
-        .pagination-info {
-            font-style: italic;
-            margin-top: 1em;
-        }
-
-        .no-results {
-            font-style: italic;
-            color: #666;
-        }
-
         /* Lesson List Styles */
         .lesson-list strong {
             color: var(--text-color);
@@ -152,13 +135,7 @@
         .lesson-list li:hover {
             background-color: var(--hover-background);
         }
-        .lesson-details {
-            background-color: var(--card-background);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 15px;
-            margin-top: 10px;
-        }
+
         .back-button {
             background-color: var(--primary-color);
             color: white;
@@ -277,69 +254,174 @@
 <body>
     <div class="header">
         <h1>Pupil Management System</h1>
+        <button onclick="window.location.href='login.html'" style="position: absolute; top: 50px; right: 20px;" class="hide-content-button">
+            Logout
+        </button>
+        <button onclick="window.location.href='landing.html'" style="position: absolute; top: 20px; right: 20px;" class="hide-content-button">
+            Home
+        </button>
+    </div>
+
+    <div class="content-buttons">
+        <button class="content-button active" onclick="showSection('searchPupils')">Search Pupils</button>
+        <button class="content-button" onclick="showSection('getOnePupil')">View Pupil</button>
+        <button class="content-button" onclick="showSection('insertPupil')">Add New Pupil</button>
+        <button class="content-button" onclick="showSection('updatePupil')">Update Pupil</button>
+        <button class="content-button" onclick="showSection('deletePupil')">Delete Pupil</button>
     </div>
 
     <div id="searchPupils" class="container">
         <h2>Search Pupils</h2>
-        <input type="text" id="fullName" placeholder="Full Name">
-        <input type="text" id="interests" placeholder="Interests">
-        <input type="text" id="personalityTraits" placeholder="Personality Traits">
-        <input type="date" id="fromBirthDate" placeholder="From Birth Date">
-        <input type="date" id="toBirthDate" placeholder="To Birth Date">
-        <input type="number" id="fromLessonsCount" placeholder="From Lessons Count">
-        <input type="number" id="toLessonsCount" placeholder="To Lessons Count">
-        <input type="number" id="page" placeholder="Page" value="1">
-        <input type="number" id="count" placeholder="Count" value="50">
-        <select id="sort">
-            <option value="id">ID</option>
-            <option value="fullName">Full Name</option>
-            <option value="birthDate">Birth Date</option>
-            <option value="lessonsCount">Lessons Count</option>
-        </select>
-        <select id="sortDirection">
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-        </select>
-        <button onclick="searchPupils()">Search</button>
-        <div id="searchResults"></div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+            <div style="display: flex; flex-direction: column;">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" placeholder="Enter pupil's full name">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="interests">Interests</label>
+                <input type="text" id="interests" placeholder="E.g., Music, Sports, Art">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="personalityTraits">Personality Traits</label>
+                <input type="text" id="personalityTraits" placeholder="E.g., Creative, Focused">
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem;">
+            <div style="display: flex; flex-direction: column;">
+                <label>Birth Date Range</label>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="date" id="fromBirthDate" style="flex: 1;">
+                    <input type="date" id="toBirthDate" style="flex: 1;">
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label>Lessons Count Range</label>
+                <div style="display: flex; gap: 0.5rem;">
+                    <input type="number" id="fromLessonsCount" placeholder="Min" style="flex: 1;">
+                    <input type="number" id="toLessonsCount" placeholder="Max" style="flex: 1;">
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label>Sort Options</label>
+                <div style="display: flex; gap: 0.5rem;">
+                    <select id="sort" style="flex: 1;">
+                        <option value="id">ID</option>
+                        <option value="fullName">Full Name</option>
+                        <option value="birthDate">Birth Date</option>
+                        <option value="lessonsCount">Lessons Count</option>
+                    </select>
+                    <select id="sortDirection" style="flex: 1;">
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 1rem; align-items: flex-end;">
+            <div style="display: flex; gap: 0.5rem;">
+                <div style="display: flex; flex-direction: column;">
+                    <label for="page">Page</label>
+                    <input type="number" id="page" value="1" min="1" style="width: 80px;">
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <label for="count">Per Page</label>
+                    <input type="number" id="count" value="50" min="1" style="width: 80px;">
+                </div>
+            </div>
+            <button onclick="searchPupils()" class="content-button">Search Pupils</button>
+        </div>
+
+        <div id="searchResults" style="margin-top: 1rem;"></div>
     </div>
 
-    <div id="getOnePupil" class="container">
-        <h2>Get One Pupil</h2>
-        <input type="number" id="getPupilId" placeholder="Pupil ID">
-        <button onclick="getOnePupil()">Get Pupil</button>
-        <div id="getOnePupilResult"></div>
+    <div id="getOnePupil" class="container" style="display: none;">
+        <h2>View Pupil Details</h2>
+        <div style="display: flex; gap: 1rem; align-items: flex-end;">
+            <div style="display: flex; flex-direction: column;">
+                <label for="getPupilId">Pupil ID</label>
+                <input type="number" id="getPupilId" placeholder="Enter pupil ID">
+            </div>
+            <button onclick="getOnePupil()" class="content-button">View Details</button>
+        </div>
+        <div id="getOnePupilResult" style="margin-top: 1rem;"></div>
     </div>
 
-    <div id="insertPupil" class="container">
-        <h2>Insert Pupil</h2>
-        <input type="text" id="insertFullName" placeholder="Full Name">
-        <input type="date" id="insertBirthDate" placeholder="Birth Date">
-        <input type="text" id="insertInterests" placeholder="Interests">
-        <input type="text" id="insertPersonalityTraits" placeholder="Personality Traits">
-        <button onclick="insertPupil()">Insert Pupil</button>
-        <div id="insertPupilResult"></div>
+    <div id="insertPupil" class="container" style="display: none;">
+        <h2>Add New Pupil</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+            <div style="display: flex; flex-direction: column;">
+                <label for="insertFullName">Full Name</label>
+                <input type="text" id="insertFullName" placeholder="Enter pupil's full name">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="insertBirthDate">Birth Date</label>
+                <input type="date" id="insertBirthDate">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="insertInterests">Interests</label>
+                <input type="text" id="insertInterests" placeholder="E.g., Music, Sports, Art">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="insertPersonalityTraits">Personality Traits</label>
+                <input type="text" id="insertPersonalityTraits" placeholder="E.g., Creative, Focused">
+            </div>
+        </div>
+        <button onclick="insertPupil()" class="content-button" style="margin-top: 1rem;">Add Pupil</button>
+        <div id="insertPupilResult" style="margin-top: 1rem;"></div>
     </div>
 
-    <div id="updatePupil" class="container">
-        <h2>Update Pupil</h2>
-        <input type="number" id="updatePupilId" placeholder="Pupil ID">
-        <input type="text" id="updateFullName" placeholder="Full Name">
-        <input type="date" id="updateBirthDate" placeholder="Birth Date">
-        <input type="text" id="updateInterests" placeholder="Interests">
-        <input type="text" id="updatePersonalityTraits" placeholder="Personality Traits">
-        <button onclick="updatePupil()">Update Pupil</button>
-        <div id="updatePupilResult"></div>
+    <div id="updatePupil" class="container" style="display: none;">
+        <h2>Update Pupil Information</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+            <div style="display: flex; flex-direction: column;">
+                <label for="updatePupilId">Pupil ID</label>
+                <input type="number" id="updatePupilId" placeholder="Enter pupil ID">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="updateFullName">Full Name</label>
+                <input type="text" id="updateFullName" placeholder="Enter pupil's full name">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="updateBirthDate">Birth Date</label>
+                <input type="date" id="updateBirthDate">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="updateInterests">Interests</label>
+                <input type="text" id="updateInterests" placeholder="E.g., Music, Sports, Art">
+            </div>
+
+            <div style="display: flex; flex-direction: column;">
+                <label for="updatePersonalityTraits">Personality Traits</label>
+                <input type="text" id="updatePersonalityTraits" placeholder="E.g., Creative, Focused">
+            </div>
+        </div>
+        <button onclick="updatePupil()" class="content-button" style="margin-top: 1rem;">Update Pupil</button>
+        <div id="updatePupilResult" style="margin-top: 1rem;"></div>
     </div>
 
-    <div id="deletePupil" class="container">
+    <div id="deletePupil" class="container" style="display: none;">
         <h2>Delete Pupil</h2>
-        <input type="number" id="deletePupilId" placeholder="Pupil ID">
-        <button onclick="deletePupil()">Delete Pupil</button>
-        <div id="deletePupilResult"></div>
+        <div style="display: flex; gap: 1rem; align-items: flex-end;">
+            <div style="display: flex; flex-direction: column;">
+                <label for="deletePupilId">Pupil ID</label>
+                <input type="number" id="deletePupilId" placeholder="Enter pupil ID">
+            </div>
+            <button onclick="deletePupil()" class="content-button">Delete Pupil</button>
+        </div>
+        <div id="deletePupilResult" style="margin-top: 1rem;"></div>
     </div>
-
-    <button onclick="logout()" style="position: fixed; top: 10px; right: 10px;">Logout</button>
 
     <script>
         const API_BASE_URL = '/api/pupils';
@@ -687,20 +769,21 @@
         }
 
         async function updatePupil() {
-            const id = document.getElementById('updatePupilId').value;
-            if(!id) {
-                handleError(new Error('No ID provided'), 'updatePupilResult', 'Please enter a pupil ID');
-                return;
-            }
+
             const pupilData = {
-                fullName: document.getElementById('updateFullName').value,
+                id: document.getElementById('updatePupilId').value,
+                fullname: document.getElementById('updateFullName').value,
                 birthDate: document.getElementById('updateBirthDate').value,
                 interests: document.getElementById('updateInterests').value,
                 personalityTraits: document.getElementById('updatePersonalityTraits').value
             };
+            if(!pupilData.id) {
+                handleError(new Error('No ID provided'), 'updatePupilResult', 'Please enter a pupil ID');
+                return;
+            }
 
             try {
-                const response = await axios.get(`${API_BASE_URL}/${id}`);
+                const response = await axios.put(`${API_BASE_URL}/${pupilData.id}`,pupilData);
                 displayPupilInfo(response.data, 'updatePupilResult');
             } catch (error) {
                 handleError(error, 'updatePupilResult', 'Error getting one pupil');
@@ -731,7 +814,7 @@
                 switch (error.response.status) {
                     case 401:
                         alert('Your session has expired. Redirecting to login page.');
-                        window.location.href = 'index.html';
+                        window.location.href = 'login.html';
                         return;
                     case 409:
                         message = 'A conflict occurred. The resource might already exist.';
@@ -759,46 +842,24 @@
             }
         }
 
-        function handleError(error, resultElementId, defaultMessage) {
-            console.error(defaultMessage, error);
-            let message = defaultMessage;
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.container').forEach(container => {
+                container.style.display = 'none';
+            });
 
-            if (error.response) {
-                switch (error.response.status) {
-                    case 401:
-                        alert('Your session has expired. Redirecting to login page.');
-                        window.location.href = 'index.html';
-                        return;
-                    case 409:
-                        message = 'A conflict occurred. The resource might already exist.';
-                        break;
-                    case 404:
-                        message = 'The requested resource was not found.';
-                        break;
-                    case 500:
-                        message = 'An internal server error occurred. Please try again later.';
-                        break;
-                    default:
-                        message = `An error occurred: ${error.response.data.message || error.message}`;
-                }
-            } else if (error.request) {
-                message = 'No response received from the server. Please check your network connection.';
-            } else {
-                message = error.message || defaultMessage;
-            }
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
 
-            const resultElement = document.getElementById(resultElementId);
-            if (resultElement) {
-                resultElement.innerHTML = `<div class="error-message">${message}</div>`;
-            } else {
-                console.warn(`Element with id '${resultElementId}' not found. Error message: ${message}`);
-            }
+            // Update active button
+            document.querySelectorAll('.content-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            event.target.classList.add('active');
         }
 
-        function logout() {
-            localStorage.removeItem('jwtToken');
-            window.location.href = 'index.html';
-        }
+        // Show search section by default
+        document.getElementById('searchPupils').style.display = 'block';
     </script>
 </body>
 </html>

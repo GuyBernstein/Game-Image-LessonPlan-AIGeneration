@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Back! | Login</title>
+    <link rel="icon" href="data:,">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .home-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .home-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .auth-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 480px;
+            transition: transform 0.3s ease;
+        }
+
+        .auth-container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            color: #4a5568;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            color: #718096;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: #4c51bf;
+            border-bottom: 2px solid #4c51bf;
+            margin-bottom: -2px;
+        }
+
+        .form-section {
+            display: none;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #4c51bf;
+            box-shadow: 0 0 0 3px rgba(76, 81, 191, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #4c51bf;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #434190;
+            transform: translateY(-2px);
+        }
+
+        #statusMessage {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        #statusMessage.error {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        #statusMessage.success {
+            background: #c6f6d5;
+            color: #2f855a;
+        }
+
+        .welcome-message {
+            text-align: center;
+            color: #718096;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <button class="home-button" onclick="window.location.href='landing.html'">
+        Home
+    </button>
+
+    <div class="auth-container">
+        <h1>Welcome Back!</h1>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('login')">Login</div>
+            <div class="tab" onclick="switchTab('signup')">Sign Up</div>
+        </div>
+
+        <div id="loginSection" class="form-section active">
+            <div class="input-group">
+                <input type="text" id="loginUsername" placeholder="Username" autocomplete="username">
+            </div>
+            <div class="input-group">
+                <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">
+            </div>
+            <button onclick="login()">Login</button>
+            <p class="welcome-message">Welcome back! We're glad to see you again.</p>
+        </div>
+
+        <div id="signupSection" class="form-section">
+            <div class="input-group">
+                <input type="text" id="signupUsername" placeholder="Choose Username" autocomplete="username">
+            </div>
+            <div class="input-group">
+                <input type="password" id="signupPassword" placeholder="Choose Password" autocomplete="new-password">
+            </div>
+            <button onclick="signUp()">Create Account</button>
+            <p class="welcome-message">Join our community today!</p>
+        </div>
+
+        <div id="statusMessage"></div>
+    </div>
+
+    <script>
+        // Clear the JWT token when the page loads
+        localStorage.removeItem('jwtToken');
+
+        function switchTab(tab) {
+            // Update tab styles
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Show/hide appropriate section
+            document.querySelectorAll('.form-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(`${tab}Section`).classList.add('active');
+
+            // Clear status message
+            document.getElementById('statusMessage').textContent = '';
+        }
+
+        async function signUp() {
+            const username = document.getElementById('signupUsername').value;
+            const password = document.getElementById('signupPassword').value;
+
+            if (!username || !password) {
+                handleFailedAuth('Please fill in all fields');
+                return;
+            }
+
+            try {
+                const response = await axios.post('/user', { username, password });
+                handleSuccessfulAuth(response.data.token, 'Account created successfully!');
+            } catch (error) {
+                handleFailedAuth('Sign up failed. Please try again with another username.');
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!username || !password) {
+                handleFailedAuth('Please fill in all fields');
+                return;
+            }
+
+            try {
+                const response = await axios.post('/authenticate', { username, password });
+                handleSuccessfulAuth(response.data.token, 'Login successful!');
+            } catch (error) {
+                handleFailedAuth('Login failed. Please check your credentials.');
+            }
+        }
+
+        function handleSuccessfulAuth(token, message) {
+            const statusMessage = document.getElementById('statusMessage');
+            statusMessage.textContent = message;
+            statusMessage.className = 'success';
+
+            localStorage.setItem('jwtToken', token);
+
+            // Redirect after a short delay to show the success message
+            setTimeout(() => {
+                window.location.href = 'landing.html';
+            }, 1000);
+        }
+
+        function handleFailedAuth(message) {
+            const statusMessage = document.getElementById('statusMessage');
+            statusMessage.textContent = message;
+            statusMessage.className = 'error';
+        }
+
+        // Add keyboard support for form submission
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    const section = input.closest('.form-section');
+                    if (section.id === 'loginSection') {
+                        login();
+                    } else {
+                        signUp();
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
