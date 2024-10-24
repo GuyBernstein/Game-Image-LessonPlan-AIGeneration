@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>JWT Authorization</title>
+
+        <link rel="icon" href="data:,">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            .container {
+                background-color: #f0f0f0;
+                padding: 20px;
+                border-radius: 5px;
+                margin-bottom: 20px;
+            }
+            input, button {
+                margin: 10px 0;
+                padding: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="authContainer"  class="container">
+            <h1>JWT Authorization</h1>
+            <div>
+                <h2>Sign Up</h2>
+                <input type="text" id="signupUsername" placeholder="Username">
+                <input type="password" id="signupPassword" placeholder="Password">
+                <button onclick="signUp()">Sign Up</button>
+            </div>
+            <div>
+                <h2>Login</h2>
+                <input type="text" id="loginUsername" placeholder="Username">
+                <input type="password" id="loginPassword" placeholder="Password">
+                <button onclick="login()">Login</button>
+            </div>
+            <div id="statusMessage"></div>
+        </div>
+
+        <script>
+            // Clear the JWT token when the page loads
+            localStorage.removeItem('jwtToken');
+
+            async function signUp() {
+                const username = document.getElementById('signupUsername').value;
+                const password = document.getElementById('signupPassword').value;
+                try {
+                    const response = await axios.post('/user', { username, password });
+                    handleSuccessfulAuth(response.data.token);
+                } catch (error) {
+                    handleFailedAuth('Sign up failed. Please try again with another username.');
+                }
+            }
+
+            async function login() {
+                const username = document.getElementById('loginUsername').value;
+                const password = document.getElementById('loginPassword').value;
+                try {
+                    const response = await axios.post('/authenticate', { username, password });
+                    handleSuccessfulAuth(response.data.token);
+                } catch (error) {
+                    handleFailedAuth('Login failed. Please check your credentials.');
+                }
+            }
+
+            function handleSuccessfulAuth(token) {
+                localStorage.setItem('jwtToken', token);
+                window.location.href = 'pupil.html';
+            }
+
+            function handleFailedAuth(message) {
+                const statusMessage = document.getElementById('statusMessage');
+                statusMessage.textContent = message;
+                statusMessage.className = 'error';
+            }
+        </script>
+    </body>
+</html>

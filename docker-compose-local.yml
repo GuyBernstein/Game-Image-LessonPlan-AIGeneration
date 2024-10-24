@@ -1,0 +1,19 @@
+version: "3"
+services:
+  appserver:
+    container_name: appserver
+    hostname: localhost
+    image: shakshukayahoo/sentiment:guy-006
+
+    ports:
+      - "8080:8080"
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+    - 5432:5432
+    volumes:
+      - ./postgresdata:/var/lib/postgresql/data
+    privileged: true
+

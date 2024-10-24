@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson Management</title>
+    <link rel="icon" href="data:,">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --success-color: #16a34a;
+            --danger-color: #dc2626;
+            --background-color: #f3f4f6;
+            --card-background: #ffffff;
+            --text-color: #1f2937;
+            --border-color: #e5e7eb;
+            --table-border-color: #ddd;
+            --hover-background: #f5f5f5;
+            --error-background: #ffcdd2;
+        }
+
+        /* Base Styles */
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Form Elements */
+        input, button, select {
+            margin: 10px 5px;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Header Styles */
+        .header {
+            background-color: var(--card-background);
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+
+        /* Container Styles */
+        .container {
+            background-color: var(--background-color);
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        /* Table Styles */
+        .lesson-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: var(--card-background);
+        }
+
+        .lesson-table th,
+        .lesson-table td {
+            padding: 12px;
+            border: 1px solid var(--table-border-color);
+            text-align: left;
+        }
+
+        .lesson-table th {
+            background-color: var(--background-color);
+            font-weight: bold;
+        }
+
+        .lesson-table tr:hover {
+            background-color: var(--hover-background);
+        }
+
+        /* Content Section Styles */
+        .content-section {
+            margin: 0;
+            padding: 15px;
+            background-color: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .content-header {
+            background-color: var(--background-color);
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .content-header h4 {
+            margin: 0;
+            color: var(--text-color);
+            font-size: 1.1rem;
+        }
+
+        .content-body {
+            padding: 15px;
+            background-color: white;
+        }
+
+        /* Button Styles */
+        .hide-content-button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-left: 10px;
+            display: inline-block;
+        }
+
+        .hide-content-button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Table Content Styles */
+        td .content-buttons {
+            margin: 0;
+            justify-content: flex-start;
+            gap: 5px;
+        }
+
+        td .content-button {
+            padding: 4px 8px;
+            font-size: 0.9rem;
+        }
+
+        td .content-section {
+            margin-top: 0;
+            border: none;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td .content-section:last-child {
+            border-bottom: none;
+        }
+
+        td .hide-content-button {
+            font-size: 0.8rem;
+            padding: 2px 6px;
+        }
+
+        td .formatted-content {
+            padding: 0.5rem;
+        }
+        .content-separator {
+            border: 0;
+            height: 1px;
+            background: #ddd;
+            margin: 20px 0;
+        }
+
+        /* Error and Status Messages */
+        .error-message {
+            color: var(--danger-color);
+            background-color: var(--error-background);
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Lesson Management System</h1>
+    </div>
+
+    <div id="searchLessons" class="container">
+        <h2>Search Lessons</h2>
+        <input type="text" id="subject" placeholder="Subject">
+        <input type="text" id="topic" placeholder="Topic">
+        <input type="number" id="fromPupilId" placeholder="From Pupil ID">
+        <input type="number" id="toPupilId" placeholder="To Pupil ID">
+        <input type="number" id="page" placeholder="Page" value="1">
+        <input type="number" id="count" placeholder="Count" value="50">
+        <select id="sort">
+            <option value="id">ID</option>
+            <option value="subject">Subject</option>
+            <option value="topic">Topic</option>
+        </select>
+        <select id="sortDirection">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+        </select>
+        <button onclick="searchLessons()">Search</button>
+        <div id="searchResults"></div>
+    </div>
+
+
+    <button onclick="logout()" style="position: fixed; top: 10px; right: 10px;">Logout</button>
+
+    <script>
+        const API_BASE_URL = '/api/pupils/lessons';
+        const jwtToken = localStorage.getItem('jwtToken');
+
+        axios.defaults.headers.common['Authorization'] = `Bearer ${jwtToken}`;
+
+        function displaySearchResults(responseData) {
+            const resultsDiv = document.getElementById('searchResults');
+            resultsDiv.innerHTML = '';
+
+            if (!responseData.data || !Array.isArray(responseData.data)) {
+                resultsDiv.innerHTML = '<p class="no-results">No lessons found.</p>';
+                return;
+            }
+
+            const table = document.createElement('table');
+            table.className = 'lesson-table';
+
+            // Create table header
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            ['ID', 'Created At', 'Subject', 'Topic', 'Game Type', 'Plan Activity', 'Image Description', 'Pupil ID', 'Actions'].forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // Create table body
+            const tbody = document.createElement('tbody');
+            responseData.data.forEach(lesson => {
+                const row = document.createElement('tr');
+
+                // Add regular cells
+                [
+                    lesson.id,
+                    lesson.createdat,
+                    lesson.subject,
+                    lesson.topic,
+                    lesson.gametype,
+                    lesson.planactivity,
+                    lesson.imagedescription,
+                    lesson.pupilid
+                ].forEach(text => {
+                    const td = document.createElement('td');
+                    td.textContent = text || 'N/A';
+                    row.appendChild(td);
+                });
+
+                // Add actions cell with content buttons
+                const actionsCell = document.createElement('td');
+                const contentButtons = document.createElement('div');
+                contentButtons.className = 'content-buttons';
+
+                ['Image', 'Game', 'Plan'].forEach(contentType => {
+                    const button = document.createElement('button');
+                    button.className = 'content-button';
+                    button.textContent = `Display ${contentType}`;
+                    button.onclick = () => showSpecificContent(lesson.pupilid, lesson.id, contentType.toLowerCase());
+                    contentButtons.appendChild(button);
+                });
+
+                actionsCell.appendChild(contentButtons);
+                row.appendChild(actionsCell);
+                tbody.appendChild(row);
+
+                // Add a row for content (initially hidden)
+                const contentRow = document.createElement('tr');
+                contentRow.id = `content-row-${lesson.id}`;
+                contentRow.style.display = 'none';
+                const contentCell = document.createElement('td');
+                contentCell.colSpan = 9;
+                contentRow.appendChild(contentCell);
+                tbody.appendChild(contentRow);
+            });
+
+            table.appendChild(tbody);
+            resultsDiv.appendChild(table);
+
+            if (responseData.pagination) {
+                const paginationInfo = document.createElement('div');
+                paginationInfo.className = 'pagination-info';
+
+                const paginationDetails = [
+                    `Current Page: ${responseData.pagination.page}`,
+                    `Total Pages: ${responseData.pagination.ofPage}`,
+                    `Total Results: ${responseData.pagination.count}`
+                ];
+
+                paginationDetails.forEach(detail => {
+                    const span = document.createElement('span');
+                    span.className = 'pagination-detail';
+                    span.textContent = detail;
+                    paginationInfo.appendChild(span);
+
+                    // Add separator except for last item
+                    if (detail !== paginationDetails[paginationDetails.length - 1]) {
+                        const separator = document.createElement('span');
+                        separator.className = 'pagination-separator';
+                        separator.textContent = ' | ';
+                        paginationInfo.appendChild(separator);
+                    }
+                });
+
+                resultsDiv.appendChild(paginationInfo);
+            }
+        }
+
+        async function showSpecificContent(pupilId, lessonId, contentType) {
+            try {
+                const lesson = await getLesson(pupilId, lessonId);
+                const contentRow = document.getElementById(`content-row-${lessonId}`);
+                const contentCell = contentRow.firstChild;
+
+                contentCell.innerHTML = `
+                    <div class="content-section">
+                        <div class="content-header">
+                            <h4>${contentType.charAt(0).toUpperCase() + contentType.slice(1)} Content</h4>
+                            <button class="hide-content-button" onclick="hideContentRow(${lessonId})">Hide Content</button>
+                        </div>
+                        <div class="content-body">
+                            ${getContentByType(lesson, contentType)}
+                        </div>
+                    </div>
+                `;
+
+                contentRow.style.display = 'table-row';
+            } catch (error) {
+                handleError(error, `content-row-${lessonId}`, 'Error fetching lesson content');
+            }
+        }
+
+        function getContentByType(lesson, contentType) {
+            switch (contentType) {
+                case 'image':
+                    return lesson.imageurl ?
+                        `<a href="${lesson.imageurl}" class="image-link" target="_blank" rel="noopener noreferrer">
+                            ${lesson.imageurl}
+                        </a>` :
+                        'No image content available';
+                case 'game':
+                    return formatTextContent(lesson.gamedescription);
+                case 'plan':
+                    return formatTextContent(lesson.plandescription);
+                default:
+                    handleError(new Error('Content type not recognized'), 'searchResult', 'invalid Lesson content type');
+                    return;
+            }
+        }
+
+        function hideContentRow(lessonId) {
+            const contentRow = document.getElementById(`content-row-${lessonId}`);
+            if (contentRow) {
+                contentRow.style.display = 'none';
+            }
+        }
+
+        async function getLesson(pupilId, lessonId) {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/${pupilId}/${lessonId}/display`);
+                return response.data;
+            } catch (error) {
+                handleError(error, 'getOnePupilResult', 'Error fetching lesson details');
+            }
+        }
+
+        function formatTextContent(text) {
+            if (!text) return 'No content available';
+
+            const formattedText = text
+                // Handle h3 headers (###)
+                .replace(/^###\s+(.*?)$/gm, '<h3>$1</h3>')
+                // Handle h4 headers (####)
+                .replace(/^####\s+(.*?)$/gm, '<h4>$1</h4>')
+                // Handle separator line
+                .replace(/^\s*---\s*$/gm, '<hr class="content-separator">')
+                // Handle multiple newlines as paragraph breaks
+                .replace(/\n{2,}/g, '</p><p>')
+                // Handle single newlines as line breaks
+                .replace(/\n/g, '<br>')
+                // Handle bold text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                // Handle italic text
+                .replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+            return `<div class="formatted-content"><p>${formattedText}</p></div>`;
+        }
+
+        async function searchLessons() {
+            const params = {
+                subject: document.getElementById('subject').value,
+                topic: document.getElementById('topic').value,
+                fromPupilId: document.getElementById('fromPupilId').value,
+                toPupilId: document.getElementById('toPupilId').value,
+                page: document.getElementById('page').value,
+                count: document.getElementById('count').value,
+                sort: document.getElementById('sort').value,
+                sortDirection: document.getElementById('sortDirection').value
+            };
+
+            // Remove null values from params
+            Object.keys(params).forEach(key => params[key] === null && delete params[key]);
+
+            try {
+                const response = await axios.get(API_BASE_URL, { params });
+                displaySearchResults(response.data);
+            } catch (error) {
+                handleError(error, 'searchResults', 'Error searching lessons');
+            }
+        }
+
+        function handleError(error, resultElementId, defaultMessage) {
+            console.error(defaultMessage, error);
+            let message = defaultMessage;
+
+            if (error.response) {
+                switch (error.response.status) {
+                    case 401:
+                        alert('Your session has expired. Redirecting to login page.');
+                        window.location.href = 'index.html';
+                        return;
+                    case 409:
+                        message = 'A conflict occurred. The resource might already exist.';
+                        break;
+                    case 404:
+                        message = 'The requested resource was not found.';
+                        break;
+                    case 500:
+                        message = 'An internal server error occurred. Please try again later.';
+                        break;
+                    default:
+                        message = `An error occurred: ${error.response.data.message || error.message}`;
+                }
+            } else if (error.request) {
+                message = 'No response received from the server. Please check your network connection.';
+            } else {
+                message = error.message || defaultMessage;
+            }
+
+            const resultElement = document.getElementById(resultElementId);
+            if (resultElement) {
+                resultElement.innerHTML = `<div class="error-message">${message}</div>`;
+            } else {
+                console.warn(`Element with id '${resultElementId}' not found. Error message: ${message}`);
+            }
+        }
+
+    </script>
+</body>
+</html>
