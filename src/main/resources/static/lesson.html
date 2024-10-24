@@ -70,12 +70,6 @@
         }
 
         /* Table Styles */
-        .lesson-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background-color: var(--card-background);
-        }
 
         .lesson-table th,
         .lesson-table td {
@@ -142,17 +136,6 @@
         }
 
         /* Table Content Styles */
-        td .content-buttons {
-            margin: 0;
-            justify-content: flex-start;
-            gap: 5px;
-        }
-
-        td .content-button {
-            padding: 4px 8px;
-            font-size: 0.9rem;
-        }
-
         td .content-section {
             margin-top: 0;
             border: none;
@@ -168,9 +151,6 @@
             padding: 2px 6px;
         }
 
-        td .formatted-content {
-            padding: 0.5rem;
-        }
         .content-separator {
             border: 0;
             height: 1px;
@@ -185,6 +165,20 @@
             padding: 10px;
             border-radius: 4px;
             margin-top: 10px;
+        }
+
+        .detail-display {
+            padding: 0.5rem;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            min-height: 1.5rem;
+        }
+
+        .generation-options {
+            padding: 1rem;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            margin-top: 1rem;
         }
     </style>
 </head>
@@ -317,28 +311,118 @@
 
     <div id="updateLesson" class="container" style="display: none;">
         <h2>Update Lesson</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+
+        <!-- Step 1: Initial ID Input -->
+        <div id="lessonIdInput" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
             <div style="display: flex; flex-direction: column;">
                 <label for="updateLessonId">Lesson ID</label>
                 <input type="number" id="updateLessonId" placeholder="Enter lesson ID">
             </div>
-
-            <div style="display: flex; flex-direction: column;">
-                <label for="updateSubject">Subject</label>
-                <input type="text" id="updateSubject" placeholder="Enter subject name">
-            </div>
-
-            <div style="display: flex; flex-direction: column;">
-                <label for="updateTopic">Topic</label>
-                <input type="text" id="updateTopic" placeholder="Enter lesson topic">
-            </div>
-
             <div style="display: flex; flex-direction: column;">
                 <label for="updatePupilId">Pupil ID</label>
                 <input type="number" id="updatePupilId" placeholder="Enter pupil ID">
             </div>
         </div>
-        <button onclick="updateLesson()" class="hide-content-button" style="margin-top: 1rem;">Update Lesson</button>
+        <button onclick="fetchLessonDetails()" class="hide-content-button" style="margin-top: 1rem;">Find Lesson</button>
+
+        <!-- Step 2: Lesson Details and Generation Options -->
+        <div id="lessonDetails" style="display: none; margin-top: 2rem;">
+            <div style="margin-bottom: 1rem;">
+                <h3>Lesson Details</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <div style="display: flex; flex-direction: column;">
+                        <label>Subject</label>
+                        <div id="lessonSubject" class="detail-display"></div>
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <label>Topic</label>
+                        <div id="lessonTopic" class="detail-display"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem;">
+                <h3>Generation Options</h3>
+                <div class="generation-buttons" style="display: flex; gap: 10px; margin-top: 1rem;">
+                    <button onclick="toggleGenerationOptions('all')" class="hide-content-button">Regenerate All</button>
+                    <button onclick="toggleGenerationOptions('plan')" class="hide-content-button">Generate Plan</button>
+                    <button onclick="toggleGenerationOptions('game')" class="hide-content-button">Generate Game</button>
+                    <button onclick="toggleGenerationOptions('image')" class="hide-content-button">Generate Image</button>
+                </div>
+
+                <!-- Generation Option Forms -->
+                <div id="allGenerationOptions" class="generation-options" style="display: none; margin-top: 1rem;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                        <div style="display: flex; flex-direction: column;">
+                            <label for="updateActivityType">Activity Type</label>
+                            <select id="updateActivityType">
+                                <option value="Classroom">Frontal lecture in class</option>
+                                <option value="Computerized">A computerized class</option>
+                                <option value="GroupWork">Group discussion</option>
+                                <option value="OutSide">Lesson outside the classroom</option>
+                                <option value="Remote">Online lesson</option>
+                                <option value="Emotional">Based on personality traits</option>
+                                <option value="Reinforcement">Based on interests</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; flex-direction: column;">
+                            <label for="updateKnownGame">Known Game</label>
+                            <select id="updateKnownGame">
+                                <option value="Hangman">Hangman</option>
+                                <option value="Memory">Memory</option>
+                                <option value="Charades">Charades</option>
+                                <option value="Bingo">Bingo</option>
+                                <option value="ScavengerHunt">Scavenger Hunt</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; flex-direction: column;">
+                            <label for="updateImageDescription">Image Description</label>
+                            <input type="text" id="updateImageDescription" placeholder="Enter image description">
+                        </div>
+                    </div>
+                    <button onclick="handleGeneration('all')" class="hide-content-button" style="margin-top: 1rem;">Generate All</button>
+                </div>
+
+                <div id="planGenerationOptions" class="generation-options" style="display: none; margin-top: 1rem;">
+                    <div style="display: flex; flex-direction: column; max-width: 250px;">
+                        <label for="updatePlanActivityType">Activity Type</label>
+                        <select id="updatePlanActivityType">
+                            <option value="Classroom">Frontal lecture in class</option>
+                            <option value="Computerized">A computerized class</option>
+                            <option value="GroupWork">Group discussion</option>
+                            <option value="OutSide">Lesson outside the classroom</option>
+                            <option value="Remote">Online lesson</option>
+                            <option value="Emotional">Based on personality traits</option>
+                            <option value="Reinforcement">Based on interests</option>
+                        </select>
+                    </div>
+                    <button onclick="handleGeneration('plan')" class="hide-content-button" style="margin-top: 1rem;">Generate Plan</button>
+                </div>
+
+                <div id="gameGenerationOptions" class="generation-options" style="display: none; margin-top: 1rem;">
+                    <div style="display: flex; flex-direction: column; max-width: 250px;">
+                        <label for="updateGameType">Known Game</label>
+                        <select id="updateGameType">
+                            <option value="Hangman">Hangman</option>
+                            <option value="Memory">Memory</option>
+                            <option value="Charades">Charades</option>
+                            <option value="Bingo">Bingo</option>
+                            <option value="ScavengerHunt">Scavenger Hunt</option>
+                        </select>
+                    </div>
+                    <button onclick="handleGeneration('game')" class="hide-content-button" style="margin-top: 1rem;">Generate Game</button>
+                </div>
+
+                <div id="imageGenerationOptions" class="generation-options" style="display: none; margin-top: 1rem;">
+                    <div style="display: flex; flex-direction: column; max-width: 250px;">
+                        <label for="updateImageDesc">Image Description</label>
+                        <input type="text" id="updateImageDesc" placeholder="Enter image description">
+                    </div>
+                    <button onclick="handleGeneration('image')" class="hide-content-button" style="margin-top: 1rem;">Generate Image</button>
+                </div>
+            </div>
+        </div>
+
         <div id="updateLessonResult" style="margin-top: 1rem;"></div>
     </div>
 
@@ -465,7 +549,7 @@
 
         async function showSpecificContent(pupilId, lessonId, contentType) {
             try {
-                const lesson = await getLesson(pupilId, lessonId);
+                const lesson = await getLesson(pupilId, lessonId, 'getOnePupilResult');
                 const contentRow = document.getElementById(`content-row-${lessonId}`);
                 const contentCell = contentRow.firstChild;
 
@@ -512,12 +596,12 @@
             }
         }
 
-        async function getLesson(pupilId, lessonId) {
+        async function getLesson(pupilId, lessonId, elementId) {
             try {
                 const response = await axios.get(`${API_BASE_URL}/${pupilId}/${lessonId}/display`);
                 return response.data;
             } catch (error) {
-                handleError(error, 'getOnePupilResult', 'Error fetching lesson details');
+                handleError(error, elementId, 'Error fetching lesson details');
             }
         }
 
@@ -566,184 +650,90 @@
             }
         }
 
-        function displaySingleLesson(lesson, containerId) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
-
-            // Create the main lesson info card
-            const lessonCard = document.createElement('div');
-            lessonCard.className = 'lesson-table';
-
-            // Create the header row with lesson details
-            const headerTable = document.createElement('table');
-            headerTable.className = 'lesson-table';
-
-            const thead = document.createElement('thead');
-            const headerRow = document.createElement('tr');
-            ['ID', 'Created At', 'Subject', 'Topic', 'Game Type', 'Plan Activity', 'Image Description', 'Pupil ID', 'Actions'].forEach(header => {
-                const th = document.createElement('th');
-                th.textContent = header;
-                headerRow.appendChild(th);
-            });
-            thead.appendChild(headerRow);
-            headerTable.appendChild(thead);
-
-            // Create the body row with lesson data
-            const tbody = document.createElement('tbody');
-            const dataRow = document.createElement('tr');
-
-            // Add regular cells
-            [
-                lesson.id,
-                lesson.createdat,
-                lesson.subject,
-                lesson.topic,
-                lesson.gametype,
-                lesson.planactivity,
-                lesson.imagedescription,
-                lesson.pupilid
-            ].forEach(text => {
-                const td = document.createElement('td');
-                td.textContent = text || 'N/A';
-                dataRow.appendChild(td);
-            });
-
-            // Add actions cell with content buttons
-            const actionsCell = document.createElement('td');
-            const contentButtons = document.createElement('div');
-            contentButtons.className = 'content-buttons';
-
-            ['Image', 'Game', 'Plan'].forEach(contentType => {
-                const button = document.createElement('button');
-                button.className = 'content-button';
-                button.textContent = `Display ${contentType}`;
-                button.onclick = () => showSingleLessonContent(lesson, contentType.toLowerCase());
-                contentButtons.appendChild(button);
-            });
-
-            actionsCell.appendChild(contentButtons);
-            dataRow.appendChild(actionsCell);
-            tbody.appendChild(dataRow);
-
-            // Add content row (initially hidden)
-            const contentRow = document.createElement('tr');
-            contentRow.id = `single-content-row-${lesson.id}`;
-            contentRow.style.display = 'none';
-            const contentCell = document.createElement('td');
-            contentCell.colSpan = 9;
-            contentRow.appendChild(contentCell);
-            tbody.appendChild(contentRow);
-
-            headerTable.appendChild(tbody);
-            lessonCard.appendChild(headerTable);
-            container.appendChild(lessonCard);
-        }
-
-        function showSingleLessonContent(lesson, contentType) {
-            const contentRow = document.getElementById(`single-content-row-${lesson.id}`);
-            const contentCell = contentRow.firstChild;
-
-            contentCell.innerHTML = `
-        <div class="content-section">
-            <div class="content-header">
-                <h4>${contentType.charAt(0).toUpperCase() + contentType.slice(1)} Content</h4>
-                <button class="hide-content-button" onclick="hideSingleLessonContent(${lesson.id})">Hide Content</button>
-            </div>
-            <div class="content-body">
-                ${getContentByType(lesson, contentType)}
-            </div>
-        </div>
-    `;
-
-            contentRow.style.display = 'table-row';
-        }
-
-        function hideSingleLessonContent(lessonId) {
-            const contentRow = document.getElementById(`single-content-row-${lessonId}`);
-            if (contentRow) {
-                contentRow.style.display = 'none';
-            }
-        }
-
-        // Function to be called after lesson generation completes
-        async function displayGeneratedLesson(pupilId, lessonId, containerId) {
-            try {
-                const response = await axios.get(`${API_BASE_URL}/${pupilId}/${lessonId}/display`);
-                displaySingleLesson(response.data, containerId);
-            } catch (error) {
-                handleError(error, containerId, 'Error fetching generated lesson');
-            }
-        }
-
-        // Usage example in your task status checker:
-        async function checkTaskStatus(taskId, containerId) {
-            try {
-                const response = await fetch(`/api/lessons/status/${taskId}`);
-                const data = await response.json();
-
-                if (response.ok) {
-                    if (data.status === "processing") {
-                        // Continue checking status
-                        setTimeout(() => checkTaskStatus(taskId, containerId), 2000);
-                        document.getElementById('taskStatus').textContent = "Processing...";
-                    } else {
-                        // Task completed
-                        document.getElementById('taskStatus').textContent = "Task completed!";
-                        // Display the generated lesson
-                        if (data.pupilId && data.id) {
-                            await displayGeneratedLesson(data.pupilId, data.id, containerId);
-                        }
-                    }
-                } else {
-                    document.getElementById('taskStatus').textContent = "Error checking status";
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                handleError(new Error("Error checking status"), 'taskStatus', "Exception while processing task")
-                document.getElementById('taskStatus').textContent = "Error checking status";
-            }
-        }
-
-        // Update your addLesson function to include the result container:
         async function addLesson() {
-            const pupilId = document.getElementById('newPupilId').value;
-            const subject = document.getElementById('newSubject').value;
-            const topic = document.getElementById('newTopic').value;
-            const activityType = document.getElementById('newActivityType').value;
-            const knownGame = document.getElementById('newKnownGame').value;
-            const imageDescription = document.getElementById('newImageDescription').value;
-
             const lessonData = {
-                subject: subject,
-                topic: topic
+                subject: document.getElementById('newSubject').value,
+                topic: document.getElementById('newTopic').value
             };
 
+            const pupilId = document.getElementById('newPupilId').value;
+            const params = {
+                activityType: document.getElementById('newActivityType').value,
+                knownGame: document.getElementById('newKnownGame').value,
+                imageDescription: document.getElementById('newImageDescription').value
+            };
+
+            // Validate required fields
+            if (!lessonData.subject || !lessonData.topic || !pupilId) {
+                displayError('addLessonResult', 'Please fill in all required fields');
+                return;
+            }
+
+            const url = `${API_BASE_URL}/${pupilId}/lessons`;
+
             try {
-                const response = await fetch(`${API_BASE_URL}/${pupilId}/lessons?activityType=${activityType}&knownGame=${knownGame}&imageDescription=${imageDescription}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${jwtToken}`
-                    },
-                    body: JSON.stringify(lessonData)
-                });
+                // Initial submission
+                document.getElementById('taskStatus').textContent = 'Submitting lesson...';
+                const response = await axios.post(url, lessonData, { params });
 
-                const data = await response.json();
+                if (response.data.taskId) {
+                    const taskId = response.data.taskId;
+                    document.getElementById('taskStatus').textContent = 'Generating lesson content...';
 
-                if (response.ok) {
-                    document.getElementById('addLessonResult').textContent = 'Lesson generation started';
-                    // Start checking task status with the result container ID
-                    checkTaskStatus(data.taskId, 'generatedLessonDisplay');
-                } else {
-                    document.getElementById('addLessonResult').textContent = `Error: ${data.message || 'Failed to add lesson'}`;
+                    // Poll for completion
+                    const result = await pollTaskCompletion(taskId);
+                    displayGeneratedLesson(result);
                 }
-
             } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('addLessonResult').textContent = 'Error adding lesson';
+                handleError(error, 'addLessonResult', 'Error adding lesson');
             }
         }
 
+        async function pollTaskCompletion(taskId) {
+            const statusUrl = `${API_BASE_URL}/status/${taskId}`;
+            const maxAttempts = 180; // 5 minutes maximum (with 2-second intervals)
+            let attempts = 0;
+
+            while (attempts < maxAttempts) {
+                const response = await axios.get(statusUrl);
+
+                if (response.data.status === 'processing') {
+                    // Still processing, wait 5 seconds before next attempt
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    attempts++;
+                    continue;
+                }
+
+                // Task completed successfully
+                return response.data;
+            }
+
+            throw new Error('Task timed out');
+        }
+
+        function displayGeneratedLesson(result) {
+            const display = document.getElementById('generatedLessonDisplay');
+            display.innerHTML = `
+                <h3>Lesson Generated Successfully</h3>
+                <div class="lesson-details">
+                    <p><strong>Subject:</strong> ${result.subject}</p>
+                    <p><strong>Topic:</strong> ${result.topic}</p>
+                    <p><strong>Activity Type:</strong> ${result.planActivity}</p>
+                    <p><strong>Game Type:</strong> ${result.gameType}</p>
+                    ${result.planDescription ? `<p><strong>Lesson Plan:</strong> <a href="${result.planDescription}" target="_blank">View Plan</a></p>` : ''}
+                    ${result.gameDescription ? `<p><strong>Game Description:</strong> <a href="${result.gameDescription}" target="_blank">View Game</a></p>` : ''}
+                    ${result.imageUrl ? `<p><strong>Generated Image:</strong> <img src="${result.imageUrl}" alt="Generated lesson image" style="max-width: 300px;"></p>` : ''}
+                </div>
+            `;
+
+            document.getElementById('taskStatus').textContent = '';
+            document.getElementById('addLessonResult').innerHTML = '<div class="success">Lesson added successfully!</div>';
+        }
+
+        function displayError(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="error">${message}</div>`;
+        }
 
         function handleError(error, resultElementId, defaultMessage) {
             console.error(defaultMessage, error);
@@ -781,21 +771,330 @@
             }
         }
 
+        async function handleGeneration(type) {
+            const pupilId = document.getElementById('updatePupilId').value;
+            const lessonId = document.getElementById('updateLessonId').value;
+
+            let endpoint = `${API_BASE_URL}/${pupilId}/${lessonId}`;
+            let params = new URLSearchParams();
+
+            switch (type) {
+                case 'all':
+                    endpoint += '/regenerate';
+                    params.append('activityType', document.getElementById('updateActivityType').value);
+                    params.append('knownGame', document.getElementById('updateKnownGame').value);
+                    params.append('imageDescription', document.getElementById('updateImageDescription').value);
+                    break;
+                case 'plan':
+                    endpoint += '/plan';
+                    params.append('activityType', document.getElementById('updatePlanActivityType').value);
+                    break;
+                case 'game':
+                    endpoint += '/game';
+                    params.append('knownGame', document.getElementById('updateGameType').value);
+                    break;
+                case 'image':
+                    endpoint += '/image';
+                    params.append('imageDescription', document.getElementById('updateImageDesc').value);
+                    break;
+            }
+
+            try {
+
+                const response = await axios.put(`${endpoint}?${params.toString()}`);
+
+                const display = document.getElementById('updateLessonResult');
+                display.innerHTML =
+                    `<div style="color: green;">Generating the ${type} is in progress...</div>`;
+
+                const result = await pollTaskCompletion(response.data.taskId);
+
+                switch (type) {
+                    case 'all':
+                        display.innerHTML = `
+                            <h3>Lesson Generated Successfully</h3>
+                            <div class="lesson-details">
+                                <p><strong>Activity Type:</strong> ${result.planactivity}</p>
+                                <p><strong>Game Type:</strong> ${result.gametype}</p>
+                                ${result.plandescription ? `<p><strong>Lesson Plan:</strong> ${formatTextContent(result.plandescription)} target="_blank">View Plan </p>` : ''}
+                                ${result.gamedescription ? `<p><strong>Game Description:</strong> ${formatTextContent(result.gamedescription)} target="_blank">View Game </p>` : ''}
+                                ${result.imageurl ? `<p><strong>Generated Image:</strong> <img src="${result.imageurl}" alt="Generated lesson image" style="max-width: 300px;"></p>` : ''}
+                            </div>
+                        `
+                        break;
+                    case 'plan':
+                        display.innerHTML = `
+                            <h3>Lesson Plan Generated Successfully</h3>
+                            <div class="lesson-details">
+                                <p><strong>Activity Type:</strong> ${result.planactivity}</p>
+                                <p><strong>Lesson Plan:</strong> ${formatTextContent(result.plandescription)} <\p>}
+                            </div>
+                        `
+                        break;
+                    case 'game':
+                        display.innerHTML = `
+                            <h3>Game Generated Successfully</h3>
+                            <p><strong>Game Type:</strong> ${result.gametype}</p>
+                            <p><strong>Game Description:</strong> ${formatTextContent(result.gamedescription)} </p>}
+                        `
+                        break;
+                    case 'image':
+                        display.innerHTML = `
+                            <h3>Image Generated Successfully</h3>
+                            <img src="${result.imageurl}" alt="Generated lesson image" style="max-width: 300px;"></p>
+                        `
+                        break;
+                }
+            } catch (error) {
+                document.getElementById('updateLessonResult').innerHTML =
+                    `<div style="color: red;">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function fetchLessonDetails() {
+            const lessonId = document.getElementById('updateLessonId').value;
+            const pupilId = document.getElementById('updatePupilId').value;
+
+            if (!lessonId || !pupilId) {
+                alert('Please enter both Lesson ID and Pupil ID');
+                return;
+            }
+
+            try {
+                const lesson = await getLesson(pupilId, lessonId, 'updateLessonResult');
+
+                // Show lesson details section
+                const detailsSection = document.getElementById('lessonDetails');
+                detailsSection.style.display = 'block';
+
+                // Create basic lesson details and content display
+                detailsSection.innerHTML = `
+                    <div style="margin-bottom: 1rem;">
+                        <h3>Lesson Details</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                            <div style="display: flex; flex-direction: column;">
+                                <label>Subject</label>
+                                <div class="detail-display">${lesson.subject || 'Not specified'}</div>
+                            </div>
+                            <div style="display: flex; flex-direction: column;">
+                                <label>Topic</label>
+                                <div class="detail-display">${lesson.topic || 'Not specified'}</div>
+                            </div>
+                            ${lesson.planactivity ? `
+                                <div style="display: flex; flex-direction: column;">
+                                    <label>Activity Type</label>
+                                    <div class="detail-display">${lesson.planactivity}</div>
+                                </div>
+                            ` : ''}
+                            ${lesson.gametype ? `
+                                <div style="display: flex; flex-direction: column;">
+                                    <label>Game Type</label>
+                                    <div class="detail-display">${lesson.gametype}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <!-- Content Display Buttons -->
+                        <div class="content-buttons" style="margin-top: 1rem; display: flex; gap: 1rem;">
+                            ${lesson.plandescription ? `
+                                <button class="content-button" onclick="toggleContent('plan-content-${lessonId}')">
+                                    Display Plan
+                                </button>
+                            ` : ''}
+                            ${lesson.gamedescription ? `
+                                <button class="content-button" onclick="toggleContent('game-content-${lessonId}')">
+                                    Display Game
+                                </button>
+                            ` : ''}
+                            ${lesson.imageurl ? `
+                                <button class="content-button" onclick="toggleContent('image-content-${lessonId}')">
+                                    Display Image
+                                </button>
+                            ` : ''}
+                        </div>
+
+                        <!-- Collapsible Content Sections -->
+                        ${lesson.plandescription ? `
+                            <div id="plan-content-${lessonId}" class="content-section" style="display: none; margin-top: 1rem;">
+                                <div class="content-header">
+                                    <h4>Plan Content</h4>
+                                    <button class="hide-content-button" onclick="toggleContent('plan-content-${lessonId}')">
+                                        Hide Content
+                                    </button>
+                                </div>
+                                <div class="content-body">
+                                    ${formatTextContent(lesson.plandescription)}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${lesson.gamedescription ? `
+                            <div id="game-content-${lessonId}" class="content-section" style="display: none; margin-top: 1rem;">
+                                <div class="content-header">
+                                    <h4>Game Content</h4>
+                                    <button class="hide-content-button" onclick="toggleContent('game-content-${lessonId}')">
+                                        Hide Content
+                                    </button>
+                                </div>
+                                <div class="content-body">
+                                    ${formatTextContent(lesson.gamedescription)}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${lesson.imageurl ? `
+                            <div id="image-content-${lessonId}" class="content-section" style="display: none; margin-top: 1rem;">
+                                <div class="content-header">
+                                    <h4>Image Content</h4>
+                                    <button class="hide-content-button" onclick="toggleContent('image-content-${lessonId}')">
+                                        Hide Content
+                                    </button>
+                                </div>
+                                <div class="content-body">
+                                    <img src="${lesson.imageurl}" alt="Generated lesson image" style="max-width: 300px;">
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Generation Options Section -->
+                    <div style="margin-top: 2rem;">
+                        <h3>Generation Options</h3>
+                        <div class="generation-buttons" style="display: flex; gap: 10px; margin-top: 1rem;">
+                            <button onclick="toggleGenerationOptions('all')" class="hide-content-button">Regenerate All</button>
+                            <button onclick="toggleGenerationOptions('plan')" class="hide-content-button">Generate Plan</button>
+                            <button onclick="toggleGenerationOptions('game')" class="hide-content-button">Generate Game</button>
+                            <button onclick="toggleGenerationOptions('image')" class="hide-content-button">Generate Image</button>
+                        </div>
+
+                        <!-- Generation Option Forms -->
+                        <div id="allGenerationOptions" class="generation-options" style="display: none; margin-top: 1rem;">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                                <div style="display: flex; flex-direction: column;">
+                                    <label for="updateActivityType">Activity Type</label>
+                                    <select id="updateActivityType">
+                                        <option value="Classroom">Frontal lecture in class</option>
+                                        <option value="Computerized">A computerized class</option>
+                                        <option value="GroupWork">Group discussion</option>
+                                        <option value="OutSide">Lesson outside the classroom</option>
+                                        <option value="Remote">Online lesson</option>
+                                        <option value="Emotional">Based on personality traits</option>
+                                        <option value="Reinforcement">Based on interests</option>
+                                    </select>
+                                </div>
+                                <div style="display: flex; flex-direction: column;">
+                                    <label for="updateKnownGame">Known Game</label>
+                                    <select id="updateKnownGame">
+                                        <option value="Hangman">Hangman</option>
+                                        <option value="Memory">Memory</option>
+                                        <option value="Charades">Charades</option>
+                                        <option value="Bingo">Bingo</option>
+                                        <option value="ScavengerHunt">Scavenger Hunt</option>
+                                    </select>
+                                </div>
+                                <div style="display: flex; flex-direction: column;">
+                                    <label for="updateImageDescription">Image Description</label>
+                                    <input type="text" id="updateImageDescription" placeholder="Enter image description">
+                                </div>
+                            </div>
+                            <button onclick="handleGeneration('all')" class="hide-content-button" style="margin-top: 1rem;">Generate All</button>
+                        </div>
+
+                        <div id="planGenerationOptions" class="generation-options" style="display: none; margin-top: 1rem;">
+                            <div style="display: flex; flex-direction: column; max-width: 250px;">
+                                <label for="updatePlanActivityType">Activity Type</label>
+                                <select id="updatePlanActivityType">
+                                    <option value="Classroom">Frontal lecture in class</option>
+                                    <option value="Computerized">A computerized class</option>
+                                    <option value="GroupWork">Group discussion</option>
+                                    <option value="OutSide">Lesson outside the classroom</option>
+                                    <option value="Remote">Online lesson</option>
+                                    <option value="Emotional">Based on personality traits</option>
+                                    <option value="Reinforcement">Based on interests</option>
+                                </select>
+                            </div>
+                            <button onclick="handleGeneration('plan')" class="hide-content-button" style="margin-top: 1rem;">Generate Plan</button>
+                        </div>
+
+                        <div id="gameGenerationOptions" class="generation-options" style="display: none; margin-top: 1rem;">
+                            <div style="display: flex; flex-direction: column; max-width: 250px;">
+                                <label for="updateGameType">Known Game</label>
+                                <select id="updateGameType">
+                                    <option value="Hangman">Hangman</option>
+                                    <option value="Memory">Memory</option>
+                                    <option value="Charades">Charades</option>
+                                    <option value="Bingo">Bingo</option>
+                                    <option value="ScavengerHunt">Scavenger Hunt</option>
+                                </select>
+                            </div>
+                            <button onclick="handleGeneration('game')" class="hide-content-button" style="margin-top: 1rem;">Generate Game</button>
+                        </div>
+
+                        <div id="imageGenerationOptions" class="generation-options" style="display: none; margin-top: 1rem;">
+                            <div style="display: flex; flex-direction: column; max-width: 250px;">
+                                <label for="updateImageDesc">Image Description</label>
+                                <input type="text" id="updateImageDesc" placeholder="Enter image description">
+                            </div>
+                            <button onclick="handleGeneration('image')" class="hide-content-button" style="margin-top: 1rem;">Generate Image</button>
+                        </div>
+                    </div>
+                `;
+
+            } catch (error) {
+                document.getElementById('updateLessonResult').innerHTML =
+                    `<div style="color: red;">Error: ${error.message}</div>`;
+            }
+        }
+
+        function toggleContent(contentId) {
+            const contentElement = document.getElementById(contentId);
+            if (contentElement) {
+                contentElement.style.display = contentElement.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        function toggleGenerationOptions(type) {
+            // Hide all generation options first
+            document.querySelectorAll('.generation-options').forEach(option => {
+                option.style.display = 'none';
+            });
+
+            // Show selected generation options
+            const optionsId = type + 'GenerationOptions';
+            const optionsElement = document.getElementById(optionsId);
+            if (optionsElement.style.display === 'none') {
+                optionsElement.style.display = 'block';
+            } else {
+                optionsElement.style.display = 'none';
+            }
+        }
+
         function showSection(sectionId) {
-            // Hide all sections
             document.querySelectorAll('.container').forEach(container => {
                 container.style.display = 'none';
             });
-
-            // Show selected section
             document.getElementById(sectionId).style.display = 'block';
-
-            // Update active button
             document.querySelectorAll('.hide-content-button').forEach(button => {
                 button.classList.remove('active');
             });
             event.target.classList.add('active');
+
+            // Reset update lesson form when switching sections
+            if (sectionId !== 'updateLesson') {
+                resetUpdateLessonForm();
+            }
         }
+
+        function resetUpdateLessonForm() {
+            document.getElementById('lessonDetails').style.display = 'none';
+            document.getElementById('updateLessonId').value = '';
+            document.getElementById('updatePupilId').value = '';
+            document.querySelectorAll('.generation-options').forEach(option => {
+                option.style.display = 'none';
+            });
+            document.getElementById('updateLessonResult').innerHTML = '';
+        }
+
 
         // Show search section by default
         document.getElementById('searchLessons').style.display = 'block';
