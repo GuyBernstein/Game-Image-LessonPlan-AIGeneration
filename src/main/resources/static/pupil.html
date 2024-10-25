@@ -469,6 +469,31 @@
             <button onclick="getOnePupil()" class="content-button">View Details</button>
         </div>
         <div id="getOnePupilResult" style="margin-top: 1rem;"></div>
+
+        <!-- Success message and lesson button container for View Details -->
+        <div id="viewDetailsSuccessContainer" style="display: none; margin-top: 2rem;">
+            <div class="detail-card" style="background-color: var(--card-background); padding: 1.5rem; text-align: center;">
+                <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Generate AI-Powered Lesson</h3>
+                <p style="color: var(--text-color); margin-bottom: 1.5rem;">
+                    Ready to create a customized lesson plan based on this pupil's interests and traits?
+                </p>
+                <button
+                        onclick="window.location.href='lesson.html'"
+                        class="content-button"
+                        style="
+                    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                    padding: 0.75rem 2rem;
+                    font-size: 1.1rem;
+                    transform: translateY(0);
+                    transition: all 0.2s ease;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                ">
+                <span style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                    Create Lesson Plan 🎯
+                </span>
+                </button>
+            </div>
+        </div>
     </div>
 
     <div id="insertPupil" class="container" style="display: none;">
@@ -557,8 +582,41 @@
                 <input type="text" id="updatePersonalityTraits" placeholder="E.g., Creative, Focused">
             </div>
         </div>
-        <button onclick="updatePupil()" class="content-button" style="margin-top: 1rem;">Update Pupil</button>
+        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+            <button onclick="updatePupil()" class="content-button">Update Pupil</button>
+        </div>
         <div id="updatePupilResult" style="margin-top: 1rem;"></div>
+
+        <!-- New success message and lesson button container -->
+        <div id="updateSuccessContainer" style="display: none; margin-top: 2rem;">
+            <div style="background-color: var(--success-color); color: white; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                <p style="margin: 0;">🎉 Pupil information successfully updated! Would you like to create a new lesson plan?</p>
+            </div>
+
+            <div class="detail-card" style="background-color: var(--card-background); padding: 1.5rem; text-align: center;">
+                <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Generate New Lesson Plan</h3>
+                <p style="color: var(--text-color); margin-bottom: 1.5rem;">
+                    Create a fresh lesson plan based on the pupil's updated interests and traits!
+                </p>
+                <button
+                        onclick="window.location.href='lesson.html'"
+                        class="content-button"
+                        style="
+                    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                    padding: 0.75rem 2rem;
+                    font-size: 1.1rem;
+                    transform: translateY(0);
+                    transition: all 0.2s ease;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                "
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(0, 0, 0, 0.15)'"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px rgba(0, 0, 0, 0.1)'">
+                <span style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                    Create New Lesson Plan 📚
+                </span>
+                </button>
+            </div>
+        </div>
     </div>
 
     <div id="deletePupil" class="container" style="display: none;">
@@ -852,7 +910,7 @@
                             <h3>Generated Lessons</h3>
                             <ul class="lesson-list">
                                 ${pupil.generatedLessons.map(lesson => `
-                                    <li onclick="handleLessonClick(${pupil.id}, ${lesson.id})">
+                                    <li onclick="handleLessonClick(${pupil.id}, ${lesson.id}, '${elementId}')">
                                         <strong>Lesson Id:</strong> ${lesson.id || 'N/A'}<br><br>
                                         <strong>Created At:</strong> ${lesson.createdAt || 'N/A'}<br><br>
                                         <strong>Subject:</strong> ${lesson.subject || 'N/A'}<br><br>
@@ -872,14 +930,14 @@
             }
         }
 
-        async function handleLessonClick(pupilId, lessonId) {
+        async function handleLessonClick(pupilId, lessonId, elementId) {
             // Store the current scroll position before scrolling down
             const initialScrollPosition = window.scrollY;
 
             try {
                 const lesson = await getLesson(pupilId, lessonId);
 
-                displayLessonDetails(lesson, 'getOnePupilResult');
+                displayLessonDetails(lesson, elementId);
 
                 // Scroll to bottom of the page
                 window.scrollTo({
@@ -947,8 +1005,15 @@
             try {
                 const response = await axios.get(`${API_BASE_URL}/${id}`);
                 displayPupilInfo(response.data, 'getOnePupilResult');
+
+                // Show the success container
+                const successContainer = document.getElementById('viewDetailsSuccessContainer');
+                successContainer.style.display = 'block';
+
             } catch (error) {
                 handleError(error, 'getOnePupilResult', 'Error getting one pupil');
+                // Hide the success container in case of error
+                document.getElementById('viewDetailsSuccessContainer').style.display = 'none';
             }
         }
 
@@ -991,6 +1056,21 @@
             try {
                 const response = await axios.put(`${API_BASE_URL}/${pupilData.id}`,pupilData);
                 displayPupilInfo(response.data, 'updatePupilResult');
+
+                // Show success container and scroll to it
+                const successContainer = document.getElementById('updateSuccessContainer');
+                successContainer.style.display = 'block';
+
+                // Smooth scroll to success container
+                successContainer.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+
+                // Add a subtle animation to the success message
+                const successMessage = successContainer.querySelector('.detail-card');
+                successMessage.style.animation = 'slideIn 0.5s ease-out';
+
             } catch (error) {
                 handleError(error, 'updatePupilResult', 'Error getting one pupil');
             }
