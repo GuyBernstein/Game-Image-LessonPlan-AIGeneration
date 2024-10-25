@@ -769,9 +769,8 @@
             switch (contentType) {
                 case 'image':
                     return lesson.imageurl ?
-                        `<a href="${lesson.imageurl}" class="image-link" target="_blank" rel="noopener noreferrer">
-                            ${lesson.imageurl}
-                        </a>` :
+                        `<img src="${lesson.imageurl}" alt="Generated lesson image" style="max-width: 300px;">`
+                         :
                         'No image content available';
                 case 'game':
                     return formatTextContent(lesson.gamedescription);
