@@ -251,20 +251,6 @@
             min-height: 1.5rem;
         }
 
-        .generation-options {
-            padding: 1rem;
-            background-color: #f9f9f9;
-            border-radius: 4px;
-            margin-top: 1rem;
-        }
-
-        .lesson-details {
-            padding: 2rem;
-            background: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
         .lesson-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -508,8 +494,39 @@
                 <input type="text" id="insertPersonalityTraits" placeholder="E.g., Creative, Focused">
             </div>
         </div>
-        <button onclick="insertPupil()" class="content-button" style="margin-top: 1rem;">Add Pupil</button>
+        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+            <button onclick="insertPupil()" class="content-button">Add Pupil</button>
+        </div>
         <div id="insertPupilResult" style="margin-top: 1rem;"></div>
+
+        <!-- New success message and lesson button container -->
+        <div id="successContainer" style="display: none; margin-top: 2rem;">
+            <div style="background-color: var(--success-color); color: white; padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+                <p style="margin: 0;">✨ Pupil successfully added! Ready to create a personalized lesson?</p>
+            </div>
+
+            <div class="detail-card" style="background-color: var(--card-background); padding: 1.5rem; text-align: center;">
+                <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Generate AI-Powered Lesson</h3>
+                <p style="color: var(--text-color); margin-bottom: 1.5rem;">
+                    Let's create a customized lesson plan based on this pupil's interests and traits!
+                </p>
+                <button
+                        onclick="window.location.href='lesson.html'"
+                        class="content-button"
+                        style="
+                    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+                    padding: 0.75rem 2rem;
+                    font-size: 1.1rem;
+                    transform: translateY(0);
+                    transition: all 0.2s ease;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                ">
+                <span style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                    Create Lesson Plan 🎯
+                </span>
+                </button>
+            </div>
+        </div>
     </div>
 
     <div id="updatePupil" class="container" style="display: none;">
@@ -792,45 +809,6 @@
 
             return `<div class="formatted-content"><p>${formattedText}</p></div>`;
         }
-
-
-        function toggleContent(contentId, buttonElement) {
-            // Hide all content sections first
-            const allContentSections = document.getElementsByClassName('content-section');
-            Array.from(allContentSections).forEach(section => {
-                section.style.display = 'none';
-            });
-
-            // Reset all buttons to default state
-            const allButtons = document.getElementsByClassName('content-button');
-            Array.from(allButtons).forEach(button => {
-                button.classList.remove('active');
-            });
-
-            // Show the selected content and activate the button
-            const contentElement = document.getElementById(contentId);
-            if (contentElement) {
-                contentElement.style.display = 'block';
-                buttonElement.classList.add('active');
-            }
-        }
-
-        function hideContent(contentId) {
-            const contentElement = document.getElementById(contentId);
-            if (contentElement) {
-                contentElement.style.display = 'none';
-
-                // Find and deactivate the corresponding button
-                const buttonId = contentId.split('-')[0]; // get the content type (image/game/plan)
-                const buttons = document.getElementsByClassName('content-button');
-                Array.from(buttons).forEach(button => {
-                    if (button.textContent.toLowerCase().includes(buttonId)) {
-                        button.classList.remove('active');
-                    }
-                });
-            }
-        }
-
         function displayPupilInfo(pupil, elementId) {
             const pupilInfoDiv = document.getElementById(elementId);
             if (pupil && Object.keys(pupil).length > 0) {
@@ -875,10 +853,13 @@
                             <ul class="lesson-list">
                                 ${pupil.generatedLessons.map(lesson => `
                                     <li onclick="handleLessonClick(${pupil.id}, ${lesson.id})">
-                                        <strong>Lesson Id:</strong> ${lesson.id || 'N/A'}<br>
-                                        <strong>Subject:</strong> ${lesson.subject || 'N/A'}<br>
-                                        <strong>Topic:</strong> ${lesson.topic || 'N/A'}<br>
-                                        <strong>Created At:</strong> ${lesson.createdAt || 'N/A'}
+                                        <strong>Lesson Id:</strong> ${lesson.id || 'N/A'}<br><br>
+                                        <strong>Created At:</strong> ${lesson.createdAt || 'N/A'}<br><br>
+                                        <strong>Subject:</strong> ${lesson.subject || 'N/A'}<br><br>
+                                        <strong>Topic:</strong> ${lesson.topic || 'N/A'}<br><br>
+                                        <strong>Game Type:</strong> ${lesson.gameType || 'N/A'}<br><br>
+                                        <strong>Plan Activity:</strong> ${lesson.planActivity || 'N/A'}<br><br>
+                                        <strong>Image Description:</strong> ${lesson.imageDescription || 'N/A'}
                                     </li>
                                 `).join('')}
                             </ul>
@@ -982,6 +963,12 @@
             try {
                 const response = await axios.post(API_BASE_URL, pupilData);
                 displayPupilInfo(response.data, 'insertPupilResult');
+
+                const successContainer = document.getElementById('successContainer');
+                successContainer.style.display = 'block';
+
+                // Smooth scroll to the success container
+                successContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
             } catch (error) {
                 handleError(error, 'insertPupilResult', 'Error inserting pupil');
             }
