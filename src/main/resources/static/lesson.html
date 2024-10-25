@@ -912,6 +912,7 @@
             display.innerHTML = `
                 <h3>Lesson Generated Successfully</h3>
                 <div class="lesson-details">
+                    <p><strong>Created At:</strong> ${result.createdat}</p>
                     <p><strong>Activity Type:</strong> ${result.planactivity}</p>
                     <p><strong>Game Type:</strong> ${result.gametype}</p>
 
@@ -1044,6 +1045,7 @@
                         display.innerHTML = `
                             <h3>Lesson Generated Successfully</h3>
                             <div class="lesson-details">
+                                <p><strong>Created At:</strong> ${result.createdat}</p>
                                 <p><strong>Activity Type:</strong> ${result.planactivity}</p>
                                 <p><strong>Game Type:</strong> ${result.gametype}</p>
                                 ${result.plandescription ? `<p><strong>Lesson Plan:</strong> ${formatTextContent(result.plandescription)} target="_blank">View Plan </p>` : ''}
@@ -1056,6 +1058,7 @@
                         display.innerHTML = `
                             <h3>Lesson Plan Generated Successfully</h3>
                             <div class="lesson-details">
+                                <p><strong>Created At:</strong> ${result.createdat}</p>
                                 <p><strong>Activity Type:</strong> ${result.planactivity}</p>
                                 <p><strong>Lesson Plan:</strong> ${formatTextContent(result.plandescription)} <\p>}
                             </div>
@@ -1064,6 +1067,7 @@
                     case 'game':
                         display.innerHTML = `
                             <h3>Game Generated Successfully</h3>
+                            <p><strong>Created At:</strong> ${result.createdat}</p>
                             <p><strong>Game Type:</strong> ${result.gametype}</p>
                             <p><strong>Game Description:</strong> ${formatTextContent(result.gamedescription)} </p>}
                         `
@@ -1071,6 +1075,7 @@
                     case 'image':
                         display.innerHTML = `
                             <h3>Image Generated Successfully</h3>
+                            <p><strong>Created At:</strong> ${result.createdat}</p>
                             <img src="${result.imageurl}" alt="Generated lesson image" style="max-width: 300px;"></p>
                         `
                         break;
@@ -1226,6 +1231,10 @@
                     <div style="margin-bottom: 1rem;">
                         <h3>Lesson Details</h3>
                         <div class="lesson-grid">
+                            <div class="detail-card">
+                                <label>Created At</label>
+                                <div class="detail-display">${lesson.createdat || 'Not specified'}</div>
+                            </div>
                             <div class="detail-card">
                                 <label>Subject</label>
                                 <div class="detail-display">${lesson.subject || 'Not specified'}</div>

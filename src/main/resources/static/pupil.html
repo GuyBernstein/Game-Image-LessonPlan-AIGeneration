@@ -210,21 +210,6 @@
             background-color: var(--card-background);
         }
 
-        .image-link {
-            color: #0066cc;
-            text-decoration: underline;
-            word-break: break-all;
-            cursor: pointer;
-        }
-
-        .image-link:hover {
-            color: #0052a3;
-        }
-
-        .image-link:visited {
-            color: #551A8B;
-        }
-
         .formatted-content {
             white-space: pre-wrap;
             word-wrap: break-word;
@@ -249,12 +234,160 @@
         .formatted-content em {
             font-style: italic;
         }
+
+        /* Error and Status Messages */
+        .error-message {
+            color: var(--danger-color);
+            background-color: var(--error-background);
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+
+        .detail-display {
+            padding: 0.5rem;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            min-height: 1.5rem;
+        }
+
+        .generation-options {
+            padding: 1rem;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+
+        .lesson-details {
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .lesson-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .detail-card {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+
+        .detail-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .detail-card label {
+            font-size: 0.875rem;
+            color: #64748b;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .detail-display {
+            font-size: 1rem;
+            color: #1e293b;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .content-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .content-button, .hide-content-button {
+            padding: 0.5rem 1rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s ease;
+        }
+
+        .content-button:hover, .hide-content-button:hover {
+            background: #2563eb;
+        }
+
+        .hide-content-button {
+            background: #64748b;
+        }
+
+        .hide-content-button:hover {
+            background: #475569;
+        }
+
+        .content-section {
+            background: #f8fafc;
+            border-radius: 6px;
+            margin-top: 1rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .content-header h4 {
+            margin: 0;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .content-body {
+            padding: 1rem;
+        }
+
+        select, input {
+            padding: 0.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            width: 100%;
+            margin-top: 0.25rem;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        h3 {
+            color: #1e293b;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>Pupil Management System</h1>
-        <button onclick="window.location.href='login.html'" style="position: absolute; top: 50px; right: 20px;" class="hide-content-button">
+        <button onclick="window.location.href='login.html'" style="position: absolute; top: 60px; right: 20px;" class="hide-content-button">
             Logout
         </button>
         <button onclick="window.location.href='landing.html'" style="position: absolute; top: 20px; right: 20px;" class="hide-content-button">
@@ -532,75 +665,130 @@
             lessonDetailsDiv.className = 'lesson-details';
             lessonDetailsDiv.innerHTML = `
                 <button class="back-button" onclick="this.parentElement.remove()">Hide lesson</button>
-                <h3>Lesson Details</h3>
-                <table class="lesson-table">
-                    <tr>
-                        <th>ID</th>
-                        <td>${lesson.id || 'N/A'}</td>
-                    </tr>
-                    <tr>
-                        <th>Subject</th>
-                        <td>${lesson.subject || 'N/A'}</td>
-                    </tr>
-                    <tr>
-                        <th>Topic</th>
-                        <td>${lesson.topic || 'N/A'}</td>
-                    </tr>
-                    <tr>
-                        <th>Created At</th>
-                        <td>${lesson.createdAt || 'N/A'}</td>
-                    </tr>
-                </table>
-                <div class="content-buttons">
-                    <button class="content-button" onclick="toggleContent('image-content-${lesson.id}', this)">Display Image</button>
-                    <button class="content-button" onclick="toggleContent('game-content-${lesson.id}', this)">Display Game</button>
-                    <button class="content-button" onclick="toggleContent('plan-content-${lesson.id}', this)">Display Lesson Plan</button>
-                </div>
-                <div id="image-content-${lesson.id}" class="content-section" style="display: none;">
-                    <div class="content-header">
-                        <h4>Image Content</h4>
-                        <button class="hide-content-button" onclick="hideContent('image-content-${lesson.id}')">Hide Content</button>
+                <div style="margin-bottom: 1rem;">
+                        <h3>Lesson Details</h3>
+                        <div class="lesson-grid">
+                            <div class="detail-card">
+                                <label>Created At</label>
+                                <div class="detail-display">${lesson.createdat || 'Not specified'}</div>
+                            </div>
+                            <div class="detail-card">
+                                <label>Subject</label>
+                                <div class="detail-display">${lesson.subject || 'Not specified'}</div>
+                            </div>
+                            <div class="detail-card">
+                                <label>Topic</label>
+                                <div class="detail-display">${lesson.topic || 'Not specified'}</div>
+                            </div>
+                            <div class="detail-card">
+                                <label>Image Description</label>
+                                <div class="detail-display">${lesson.imagedescription || 'Not specified'}</div>
+                            </div>
+                            ${lesson.planactivity ? `
+                                <div class="detail-card">
+                                    <label>Activity Type</label>
+                                    <div class="detail-display">${lesson.planactivity}</div>
+                                </div>
+                            ` : ''}
+                            ${lesson.gametype ? `
+                                <div class="detail-card">
+                                    <label>Game Type</label>
+                                    <div class="detail-display">${lesson.gametype}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <!-- Content Display Buttons -->
+                        <div class="content-buttons">
+                            ${lesson.plandescription ? `
+                                <button class="back-button" onclick="toggleLessonContent('plan-content-${lesson.id}')">
+                                    Display Plan
+                                </button>
+                            ` : ''}
+                            ${lesson.gamedescription ? `
+                                <button class="back-button" onclick="toggleLessonContent('game-content-${lesson.id}')">
+                                    Display Game
+                                </button>
+                            ` : ''}
+                            ${lesson.imageurl ? `
+                                <button class="back-button" onclick="toggleLessonContent('image-content-${lesson.id}')">
+                                    Display Image
+                                </button>
+                            ` : ''}
+                        </div>
+
+                        <!-- Collapsible Content Sections -->
+                        ${lesson.plandescription ? `
+                            <div id="plan-content-${lesson.id}" class="content-section" style="display: none;">
+                                <div class="content-header">
+                                    <h4>Plan Content</h4>
+                                    <button class="hide-content-button" onclick="toggleLessonContent('plan-content-${lesson.id}')">
+                                        Hide Content
+                                    </button>
+                                </div>
+                                <div class="content-body">
+                                    ${formatTextContent(lesson.plandescription)}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${lesson.gamedescription ? `
+                            <div id="game-content-${lesson.id}" class="content-section" style="display: none;">
+                                <div class="content-header">
+                                    <h4>Game Content</h4>
+                                    <button class="hide-content-button" onclick="toggleLessonContent('game-content-${lesson.id}')">
+                                        Hide Content
+                                    </button>
+                                </div>
+                                <div class="content-body">
+                                    ${formatTextContent(lesson.gamedescription)}
+                                </div>
+                            </div>
+                        ` : ''}
+
+                        ${lesson.imageurl ? `
+                            <div id="image-content-${lesson.id}" class="content-section" style="display: none;">
+                                <div class="content-header">
+                                    <h4>Image Content</h4>
+                                    <button class="hide-content-button" onclick="toggleLessonContent('image-content-${lesson.id}')">
+                                        Hide Content
+                                    </button>
+                                </div>
+                                <div class="content-body">
+                                    <img src="${lesson.imageurl}" alt="Generated lesson image" style="max-width: 300px;">
+                                </div>
+                            </div>
+                        ` : ''}
                     </div>
-                    <div class="content-body">
-                        ${lesson.imageurl ?
-                            `<a href="${lesson.imageurl}" class="image-link" target="_blank" rel="noopener noreferrer">
-                                ${lesson.imageurl}
-                            </a>` :
-                            'No image content available'}
-                    </div>
-                </div>
-                <div id="game-content-${lesson.id}" class="content-section" style="display: none;">
-                    <div class="content-header">
-                        <h4>Game Content</h4>
-                        <button class="hide-content-button" onclick="hideContent('game-content-${lesson.id}')">Hide Content</button>
-                    </div>
-                    <div class="content-body">
-                        ${formatTextContent(lesson.gamedescription)}
-                    </div>
-                </div>
-                <div id="plan-content-${lesson.id}" class="content-section" style="display: none;">
-                    <div class="content-header">
-                        <h4>Lesson Plan</h4>
-                        <button class="hide-content-button" onclick="hideContent('plan-content-${lesson.id}')">Hide Content</button>
-                    </div>
-                    <div class="content-body">
-                        ${formatTextContent(lesson.plandescription)}
-                    </div>
-                </div>
             `;
             document.getElementById(elementId).appendChild(lessonDetailsDiv);
+        }
+
+        function toggleLessonContent(contentId) {
+            const contentElement = document.getElementById(contentId);
+            if (contentElement) {
+                contentElement.style.display = contentElement.style.display === 'none' ? 'block' : 'none';
+            }
         }
 
         function formatTextContent(text) {
             if (!text) return 'No content available';
 
-            // Replace newlines with <br> tags and preserve spaces
             const formattedText = text
-                .replace(/\n{2,}/g, '</p><p>') // Convert multiple newlines to paragraphs
-                .replace(/\n/g, '<br>') // Convert single newlines to line breaks
-                .replace(/###\s+(.*?)(\n|$)/g, '<h3>$1</h3>') // Convert ### headers
-                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Convert **bold** text
-                .replace(/\*(.*?)\*/g, '<em>$1</em>'); // Convert *italic* text
+                // Handle h3 headers (###)
+                .replace(/^###\s+(.*?)$/gm, '<h3>$1</h3>')
+                // Handle h4 headers (####)
+                .replace(/^####\s+(.*?)$/gm, '<h4>$1</h4>')
+                // Handle separator line
+                .replace(/^\s*---\s*$/gm, '<hr class="content-separator">')
+                // Handle multiple newlines as paragraph breaks
+                .replace(/\n{2,}/g, '</p><p>')
+                // Handle single newlines as line breaks
+                .replace(/\n/g, '<br>')
+                // Handle bold text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                // Handle italic text
+                .replace(/\*(.*?)\*/g, '<em>$1</em>');
 
             return `<div class="formatted-content"><p>${formattedText}</p></div>`;
         }
@@ -704,9 +892,40 @@
         }
 
         async function handleLessonClick(pupilId, lessonId) {
+            // Store the current scroll position before scrolling down
+            const initialScrollPosition = window.scrollY;
+
             try {
                 const lesson = await getLesson(pupilId, lessonId);
+
                 displayLessonDetails(lesson, 'getOnePupilResult');
+
+                // Scroll to bottom of the page
+                window.scrollTo({
+                    top: document.documentElement.scrollHeight,
+                    behavior: 'smooth'
+                });
+
+                // Create and append "Back to top" button
+                const backButton = document.createElement('button');
+                backButton.textContent = 'Return to previous position';
+                backButton.className = 'back-to-position-btn'; // Add your desired styling class
+                backButton.style.position = 'fixed';
+                backButton.style.bottom = '20px';
+                backButton.style.right = '20px';
+                backButton.style.zIndex = '1000';
+
+                // Add click handler to return to initial position
+                backButton.addEventListener('click', () => {
+                    window.scrollTo({
+                        top: initialScrollPosition,
+                        behavior: 'smooth'
+                    });
+                    // Remove the button after scrolling back
+                    backButton.remove();
+                });
+
+                document.body.appendChild(backButton);
             } catch (error) {
                 handleError(error, 'getOnePupilResult', 'Error fetching lesson details');
             }
