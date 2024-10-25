@@ -180,12 +180,153 @@
             border-radius: 4px;
             margin-top: 1rem;
         }
+
+        .lesson-details {
+            padding: 2rem;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .lesson-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .detail-card {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+
+        .detail-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .detail-card label {
+            font-size: 0.875rem;
+            color: #64748b;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .detail-display {
+            font-size: 1rem;
+            color: #1e293b;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .content-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 1.5rem 0;
+        }
+
+        .content-button, .hide-content-button {
+            padding: 0.5rem 1rem;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s ease;
+        }
+
+        .content-button:hover, .hide-content-button:hover {
+            background: #2563eb;
+        }
+
+        .hide-content-button {
+            background: #64748b;
+        }
+
+        .hide-content-button:hover {
+            background: #475569;
+        }
+
+        .content-section {
+            background: #f8fafc;
+            border-radius: 6px;
+            margin-top: 1rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .content-header h4 {
+            margin: 0;
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        .content-body {
+            padding: 1rem;
+        }
+
+        .generation-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin: 1rem 0;
+        }
+
+        .generation-options {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        select, input {
+            padding: 0.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            width: 100%;
+            margin-top: 0.25rem;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+        }
+
+        h3 {
+            color: #1e293b;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+
     </style>
 </head>
 <body>
     <div class="header">
         <h1>Lesson Management System</h1>
-        <button onclick="window.location.href='login.html'" style="position: absolute; top: 50px; right: 20px;" class="hide-content-button">
+        <button onclick="window.location.href='login.html'" style="position: absolute; top: 60px; right: 20px;" class="hide-content-button">
             Logout
         </button>
         <button onclick="window.location.href='landing.html'" style="position: absolute; top: 20px; right: 20px;" class="hide-content-button">
@@ -444,6 +585,59 @@
 
         axios.defaults.headers.common['Authorization'] = `Bearer ${jwtToken}`;
 
+        // Styles for loading animation
+        const loadingStyles = `
+        .loading-container {
+            padding: 20px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #e9ecef;
+            border-radius: 50%;
+            border-top-color: #007bff;
+            animation: spin 1s linear infinite;
+            margin-right: 15px;
+        }
+
+        .loading-message {
+            color: #495057;
+            font-size: 1.1em;
+            margin: 10px 0;
+        }
+
+        .loading-progress {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin-top: 8px;
+        }
+
+        .loading-dots {
+            display: inline-block;
+            width: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        `;
+
         function displaySearchResults(responseData) {
             const resultsDiv = document.getElementById('searchResults');
             resultsDiv.innerHTML = '';
@@ -670,21 +864,23 @@
             }
 
             const url = `${API_BASE_URL}/${pupilId}/lessons`;
+            const loadingHandler = new LoadingStateHandler();
+            const display = document.getElementById('taskStatus');
 
+            // Start loading animation
+            const loadingInterval = loadingHandler.startLoading('all', display);
             try {
-                // Initial submission
-                document.getElementById('taskStatus').textContent = 'Submitting lesson...';
+
                 const response = await axios.post(url, lessonData, { params });
+                const result = await pollTaskCompletion(response.data.taskId);
 
-                if (response.data.taskId) {
-                    const taskId = response.data.taskId;
-                    document.getElementById('taskStatus').textContent = 'Generating lesson content...';
+                // Stop loading animation
+                loadingHandler.stopLoading(loadingInterval);
 
-                    // Poll for completion
-                    const result = await pollTaskCompletion(taskId);
-                    displayGeneratedLesson(result);
-                }
+                display.innerHTML = ``;
+                displayGeneratedLesson(result);
             } catch (error) {
+                loadingHandler.stopLoading(loadingInterval);
                 handleError(error, 'addLessonResult', 'Error adding lesson');
             }
         }
@@ -716,17 +912,47 @@
             display.innerHTML = `
                 <h3>Lesson Generated Successfully</h3>
                 <div class="lesson-details">
-                    <p><strong>Subject:</strong> ${result.subject}</p>
-                    <p><strong>Topic:</strong> ${result.topic}</p>
-                    <p><strong>Activity Type:</strong> ${result.planActivity}</p>
-                    <p><strong>Game Type:</strong> ${result.gameType}</p>
-                    ${result.planDescription ? `<p><strong>Lesson Plan:</strong> <a href="${result.planDescription}" target="_blank">View Plan</a></p>` : ''}
-                    ${result.gameDescription ? `<p><strong>Game Description:</strong> <a href="${result.gameDescription}" target="_blank">View Game</a></p>` : ''}
-                    ${result.imageUrl ? `<p><strong>Generated Image:</strong> <img src="${result.imageUrl}" alt="Generated lesson image" style="max-width: 300px;"></p>` : ''}
+                    <p><strong>Activity Type:</strong> ${result.planactivity}</p>
+                    <p><strong>Game Type:</strong> ${result.gametype}</p>
+
+                    ${result.plandescription ? `
+                        <div class="expandable-section">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <strong>Lesson Plan</strong>
+                                <button onclick="toggleContent('planContent')" class="hide-content-button">Show/Hide Plan</button>
+                            </div>
+                            <div id="planContent" style="display: none; margin-top: 1rem;">
+                                ${formatTextContent(result.plandescription)}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${result.gamedescription ? `
+                        <div class="expandable-section" style="margin-top: 1rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <strong>Game Description</strong>
+                                <button onclick="toggleContent('gameContent')" class="hide-content-button">Show/Hide Game</button>
+                            </div>
+                            <div id="gameContent" style="display: none; margin-top: 1rem;">
+                                ${formatTextContent(result.gamedescription)}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${result.imageurl ? `
+                        <div class="expandable-section" style="margin-top: 1rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <strong>Generated Image</strong>
+                                <button onclick="toggleContent('imageContent')" class="hide-content-button">Show/Hide Image</button>
+                            </div>
+                            <div id="imageContent" style="display: none; margin-top: 1rem;">
+                                <img src="${result.imageurl}" alt="Generated lesson image" style="max-width: 300px;">
+                            </div>
+                        </div>
+                    ` : ''}
                 </div>
             `;
 
-            document.getElementById('taskStatus').textContent = '';
             document.getElementById('addLessonResult').innerHTML = '<div class="success">Lesson added successfully!</div>';
         }
 
@@ -799,15 +1025,19 @@
                     break;
             }
 
+            const loadingHandler = new LoadingStateHandler();
+            const display = document.getElementById('updateLessonResult');
+
+            // Start loading animation
+            const loadingInterval = loadingHandler.startLoading(type, display);
+
             try {
 
                 const response = await axios.put(`${endpoint}?${params.toString()}`);
-
-                const display = document.getElementById('updateLessonResult');
-                display.innerHTML =
-                    `<div style="color: green;">Generating the ${type} is in progress...</div>`;
-
                 const result = await pollTaskCompletion(response.data.taskId);
+
+                // Stop loading animation
+                loadingHandler.stopLoading(loadingInterval);
 
                 switch (type) {
                     case 'all':
@@ -846,8 +1076,132 @@
                         break;
                 }
             } catch (error) {
+                loadingHandler.stopLoading(loadingInterval);
                 document.getElementById('updateLessonResult').innerHTML =
                     `<div style="color: red;">Error: ${error.message}</div>`;
+            }
+        }
+
+        class LoadingStateHandler {
+            constructor() {
+                // Add styles to document
+                const styleSheet = document.createElement('style');
+                styleSheet.textContent = loadingStyles;
+                document.head.appendChild(styleSheet);
+
+                this.startTime = Date.now();
+                this.dots = '';
+                this.currentMessageIndex = 0;
+                this.currentTipIndex = 0;
+            }
+
+            getMessages(type) {
+                const messages = {
+                    all: [
+                        "🎨 Crafting your perfect lesson...",
+                        "📚 Blending educational magic...",
+                        "🎮 Adding fun elements...",
+                        "🖼️ Creating visuals...",
+                        "✨ Almost there, making it special...",
+                        "🌟 Final touches..."
+                    ],
+                    plan: [
+                        "📝 Designing your lesson plan...",
+                        "🎯 Setting learning objectives...",
+                        "📚 Organizing activities...",
+                        "✨ Polishing the details..."
+                    ],
+                    game: [
+                        "🎮 Creating fun interactions...",
+                        "🎲 Rolling the dice of creativity...",
+                        "🎯 Designing engaging challenges...",
+                        "✨ Making it entertaining..."
+                    ],
+                    image: [
+                        "🎨 Gathering inspiration...",
+                        "🖼️ Painting your vision...",
+                        "✨ Adding artistic touches...",
+                        "📸 Capturing the perfect moment..."
+                    ]
+                };
+                return messages[type] || messages.all;
+            }
+
+            getTips() {
+                return [
+                    "Did you know? Active learning increases student engagement by up to 70%!",
+                    "Fun fact: Games can improve memory retention by 90%",
+                    "Pro tip: Visual aids help students learn 400% faster",
+                    "Hint: The best lessons combine multiple learning styles",
+                    "Quick fact: Interactive learning improves problem-solving skills",
+                    "Tip: Regular breaks improve learning efficiency",
+                    "Did you know? Color coding helps memory retention",
+                    "Fun fact: Movement enhances cognitive function",
+                    "Pro tip: Stories make lessons more memorable",
+                    "Quick fact: Group activities boost social learning"
+                ];
+            }
+
+            formatTime(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                const remainingSeconds = seconds % 60;
+                return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+            }
+
+            updateLoadingState(type, displayElement) {
+                const elapsedTime = Math.floor((Date.now() - this.startTime) / 1000);
+                const messages = this.getMessages(type);
+                const tips = this.getTips();
+
+                // Update message every 9 seconds (3 dots cycles)
+                this.currentMessageIndex = Math.min(
+                    Math.floor(elapsedTime / 9),
+                    messages.length - 1
+                );
+
+                // Update tip every 15 seconds
+                this.currentTipIndex = Math.floor(elapsedTime / 15) % tips.length;
+
+                // Update dots every 3 seconds
+                const dotCount = Math.floor(elapsedTime / 3) % 4;
+                this.dots = '.'.repeat(dotCount);
+
+                const html = `
+                    <div class="loading-container fade-in">
+                        <div style="display: flex; align-items: center;">
+                            <div class="loading-spinner"></div>
+                            <div>
+                                <div class="loading-message">
+                                    ${messages[this.currentMessageIndex]}${this.dots}
+                                </div>
+                                <div class="loading-progress">
+                                    Time elapsed: ${this.formatTime(elapsedTime)}
+                                </div>
+                                <div class="loading-progress" style="font-style: italic;">
+                                    ${tips[this.currentTipIndex]}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                displayElement.innerHTML = html;
+            }
+
+            startLoading(type, displayElement) {
+                this.startTime = Date.now();
+                this.updateLoadingState(type, displayElement);
+
+                // Update every 3 seconds
+                const intervalId = setInterval(() => {
+                    this.updateLoadingState(type, displayElement);
+                }, 3000);
+
+                return intervalId;
+            }
+
+            stopLoading(intervalId) {
+                clearInterval(intervalId);
             }
         }
 
@@ -871,23 +1225,27 @@
                 detailsSection.innerHTML = `
                     <div style="margin-bottom: 1rem;">
                         <h3>Lesson Details</h3>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
-                            <div style="display: flex; flex-direction: column;">
+                        <div class="lesson-grid">
+                            <div class="detail-card">
                                 <label>Subject</label>
                                 <div class="detail-display">${lesson.subject || 'Not specified'}</div>
                             </div>
-                            <div style="display: flex; flex-direction: column;">
+                            <div class="detail-card">
                                 <label>Topic</label>
                                 <div class="detail-display">${lesson.topic || 'Not specified'}</div>
                             </div>
+                            <div class="detail-card">
+                                <label>Image Description</label>
+                                <div class="detail-display">${lesson.imagedescription || 'Not specified'}</div>
+                            </div>
                             ${lesson.planactivity ? `
-                                <div style="display: flex; flex-direction: column;">
+                                <div class="detail-card">
                                     <label>Activity Type</label>
                                     <div class="detail-display">${lesson.planactivity}</div>
                                 </div>
                             ` : ''}
                             ${lesson.gametype ? `
-                                <div style="display: flex; flex-direction: column;">
+                                <div class="detail-card">
                                     <label>Game Type</label>
                                     <div class="detail-display">${lesson.gametype}</div>
                                 </div>
@@ -895,7 +1253,7 @@
                         </div>
 
                         <!-- Content Display Buttons -->
-                        <div class="content-buttons" style="margin-top: 1rem; display: flex; gap: 1rem;">
+                        <div class="content-buttons">
                             ${lesson.plandescription ? `
                                 <button class="content-button" onclick="toggleContent('plan-content-${lessonId}')">
                                     Display Plan
@@ -915,7 +1273,7 @@
 
                         <!-- Collapsible Content Sections -->
                         ${lesson.plandescription ? `
-                            <div id="plan-content-${lessonId}" class="content-section" style="display: none; margin-top: 1rem;">
+                            <div id="plan-content-${lessonId}" class="content-section" style="display: none;">
                                 <div class="content-header">
                                     <h4>Plan Content</h4>
                                     <button class="hide-content-button" onclick="toggleContent('plan-content-${lessonId}')">
@@ -929,7 +1287,7 @@
                         ` : ''}
 
                         ${lesson.gamedescription ? `
-                            <div id="game-content-${lessonId}" class="content-section" style="display: none; margin-top: 1rem;">
+                            <div id="game-content-${lessonId}" class="content-section" style="display: none;">
                                 <div class="content-header">
                                     <h4>Game Content</h4>
                                     <button class="hide-content-button" onclick="toggleContent('game-content-${lessonId}')">
@@ -943,7 +1301,7 @@
                         ` : ''}
 
                         ${lesson.imageurl ? `
-                            <div id="image-content-${lessonId}" class="content-section" style="display: none; margin-top: 1rem;">
+                            <div id="image-content-${lessonId}" class="content-section" style="display: none;">
                                 <div class="content-header">
                                     <h4>Image Content</h4>
                                     <button class="hide-content-button" onclick="toggleContent('image-content-${lessonId}')">
@@ -960,7 +1318,7 @@
                     <!-- Generation Options Section -->
                     <div style="margin-top: 2rem;">
                         <h3>Generation Options</h3>
-                        <div class="generation-buttons" style="display: flex; gap: 10px; margin-top: 1rem;">
+                        <div class="generation-buttons" style="display: flex; gap: 10px;">
                             <button onclick="toggleGenerationOptions('all')" class="hide-content-button">Regenerate All</button>
                             <button onclick="toggleGenerationOptions('plan')" class="hide-content-button">Generate Plan</button>
                             <button onclick="toggleGenerationOptions('game')" class="hide-content-button">Generate Game</button>
@@ -968,7 +1326,7 @@
                         </div>
 
                         <!-- Generation Option Forms -->
-                        <div id="allGenerationOptions" class="generation-options" style="display: none; margin-top: 1rem;">
+                        <div id="allGenerationOptions" class="generation-options" style="display: none;">
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
                                 <div style="display: flex; flex-direction: column;">
                                     <label for="updateActivityType">Activity Type</label>
@@ -1000,7 +1358,7 @@
                             <button onclick="handleGeneration('all')" class="hide-content-button" style="margin-top: 1rem;">Generate All</button>
                         </div>
 
-                        <div id="planGenerationOptions" class="generation-options" style="display: none; margin-top: 1rem;">
+                        <div id="planGenerationOptions" class="generation-options" style="display: none;">
                             <div style="display: flex; flex-direction: column; max-width: 250px;">
                                 <label for="updatePlanActivityType">Activity Type</label>
                                 <select id="updatePlanActivityType">
@@ -1016,7 +1374,7 @@
                             <button onclick="handleGeneration('plan')" class="hide-content-button" style="margin-top: 1rem;">Generate Plan</button>
                         </div>
 
-                        <div id="gameGenerationOptions" class="generation-options" style="display: none; margin-top: 1rem;">
+                        <div id="gameGenerationOptions" class="generation-options" style="display: none;">
                             <div style="display: flex; flex-direction: column; max-width: 250px;">
                                 <label for="updateGameType">Known Game</label>
                                 <select id="updateGameType">
@@ -1030,7 +1388,7 @@
                             <button onclick="handleGeneration('game')" class="hide-content-button" style="margin-top: 1rem;">Generate Game</button>
                         </div>
 
-                        <div id="imageGenerationOptions" class="generation-options" style="display: none; margin-top: 1rem;">
+                        <div id="imageGenerationOptions" class="generation-options" style="display: none;">
                             <div style="display: flex; flex-direction: column; max-width: 250px;">
                                 <label for="updateImageDesc">Image Description</label>
                                 <input type="text" id="updateImageDesc" placeholder="Enter image description">
