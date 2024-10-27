@@ -319,7 +319,55 @@
             height: auto;
             border-radius: 4px;
         }
+        .pupil-selector-container {
+            position: relative;
+        }
 
+        .pupil-selector-container input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .pupil-selector-dropdown {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-top: 2px;
+        }
+
+        .pupil-selector-dropdown table tr:hover {
+            background-color: #f5f5f5;
+            cursor: pointer;
+        }
+
+        .pupil-selector-dropdown table td,
+        .pupil-selector-dropdown table th {
+            text-align: left;
+        }
+
+        .pupil-select-button {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .pupil-select-button:hover {
+            background-color: #f5f5f5;
+        }
+
+        .pupil-select-button span:last-child {
+            color: #666;
+        }
 
     </style>
 </head>
@@ -329,7 +377,7 @@
         <button onclick="window.location.href='login.html'" style="position: absolute; top: 60px; right: 20px;" class="hide-content-button">
             Logout
         </button>
-        <button onclick="window.location.href='landing.html'" style="position: absolute; top: 20px; right: 20px;" class="hide-content-button">
+        <button onclick="window.location.href='index.html'" style="position: absolute; top: 20px; right: 20px;" class="hide-content-button">
             Home
         </button>
     </div>
@@ -412,7 +460,26 @@
 
             <div style="display: flex; flex-direction: column;">
                 <label for="newPupilId">Pupil ID</label>
-                <input type="number" id="newPupilId" placeholder="Enter pupil ID">
+                <div class="pupil-selector-container" style="position: relative;">
+                    <div class="pupil-select-button"
+                         onclick="togglePupilSelector()"
+                         style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; background: white; cursor: pointer;">
+                        <span id="selectedPupilDisplay">Select a pupil</span>
+                        <input type="hidden" id="newPupilId" value="">
+                        <span>▼</span>
+                    </div>
+                    <div id="pupilSelectorDropdown" class="pupil-selector-dropdown" style="display: none;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                            <tr>
+                                <th style="position: sticky; top: 0; background: white; padding: 0.5rem; border-bottom: 2px solid #ddd;">ID</th>
+                                <th style="position: sticky; top: 0; background: white; padding: 0.5rem; border-bottom: 2px solid #ddd;">Name</th>
+                            </tr>
+                            </thead>
+                            <tbody id="pupilSelectorBody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
             <div style="display: flex; flex-direction: column;">
@@ -453,18 +520,37 @@
     <div id="updateLesson" class="container" style="display: none;">
         <h2>Update Lesson</h2>
 
-        <!-- Step 1: Initial ID Input -->
-        <div id="lessonIdInput" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+        <!-- Lesson Selector -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
             <div style="display: flex; flex-direction: column;">
-                <label for="updateLessonId">Lesson ID</label>
-                <input type="number" id="updateLessonId" placeholder="Enter lesson ID">
-            </div>
-            <div style="display: flex; flex-direction: column;">
-                <label for="updatePupilId">Pupil ID</label>
-                <input type="number" id="updatePupilId" placeholder="Enter pupil ID">
+                <label>Select Lesson</label>
+                <div class="lesson-selector-container" style="position: relative;">
+                    <div class="lesson-select-button"
+                         onclick="toggleLessonSelector()"
+                         style="display: flex; justify-content: space-between; align-items: center; width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; background: white; cursor: pointer;">
+                        <span id="selectedLessonDisplay">Select a lesson</span>
+                        <input type="hidden" id="updateLessonId" value="">
+                        <input type="hidden" id="updatePupilId" value="">
+                        <span>▼</span>
+                    </div>
+                    <div id="lessonSelectorDropdown" class="lesson-selector-dropdown"
+                         style="display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 300px; overflow-y: auto; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 1000;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                            <tr>
+                                <th style="position: sticky; top: 0; background: white; padding: 0.5rem; border-bottom: 2px solid #ddd;">Lesson ID</th>
+                                <th style="position: sticky; top: 0; background: white; padding: 0.5rem; border-bottom: 2px solid #ddd;">Subject</th>
+                                <th style="position: sticky; top: 0; background: white; padding: 0.5rem; border-bottom: 2px solid #ddd;">Topic</th>
+                                <th style="position: sticky; top: 0; background: white; padding: 0.5rem; border-bottom: 2px solid #ddd;">Pupil ID</th>
+                                <th style="position: sticky; top: 0; background: white; padding: 0.5rem; border-bottom: 2px solid #ddd;">Pupil Name</th>
+                            </tr>
+                            </thead>
+                            <tbody id="lessonSelectorBody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-        <button onclick="fetchLessonDetails()" class="hide-content-button" style="margin-top: 1rem;">Find Lesson</button>
 
         <!-- Step 2: Lesson Details and Generation Options -->
         <div id="lessonDetails" style="display: none; margin-top: 2rem;">
@@ -637,6 +723,236 @@
             to { opacity: 1; }
         }
         `;
+
+        let selectedLessonId = null;
+        let selectedPupilId = null;
+
+        async function searchLessonsForSelector(searchText = '') {
+            const params = {
+                subject: null,
+                topic: null,
+                fromPupilId: null,
+                toPupilId: null,
+                page: 1,
+                count: 50,
+                sort: 'id',
+                sortDirection: 'asc'
+            };
+
+            try {
+                const response = await axios.get(`${API_BASE_URL}`, { params });
+                const lessonsData = response.data;
+
+                // Fetch pupils data to get names
+                const pupilsResponse = await axios.get(`/api/pupils`, {
+                    params: {
+                        fullName: null,
+                        interests: null,
+                        personalityTraits: null,
+                        fromBirthDate: null,
+                        toBirthDate: null,
+                        fromLessonsCount: null,
+                        toLessonsCount: null,
+                        page: 1,
+                        count: 50,
+                        sort: 'id',
+                        sortDirection: 'asc'
+                    }
+                });
+
+                // Create a map of pupil IDs to names
+                const pupilMap = new Map();
+                pupilsResponse.data.data.forEach(pupil => {
+                    pupilMap.set(pupil.id, pupil.fullname);
+                });
+
+                // Add pupil names to lessons data
+                const enrichedLessonsData = {
+                    ...lessonsData,
+                    data: lessonsData.data.map(lesson => ({
+                        ...lesson,
+                        pupilName: pupilMap.get(lesson.pupilid) || 'Unknown'
+                    }))
+                };
+
+                displayLessonsInDropdown(enrichedLessonsData);
+            } catch (error) {
+                console.error('Error fetching lessons:', error);
+                const tbody = document.getElementById('lessonSelectorBody');
+                tbody.innerHTML = '<tr><td colspan="5" style="padding: 0.5rem; text-align: center;">Error loading lessons</td></tr>';
+            }
+        }
+
+        function displayLessonsInDropdown(lessons) {
+            const tbody = document.getElementById('lessonSelectorBody');
+            tbody.innerHTML = '';
+
+            if (!lessons.data || !Array.isArray(lessons.data)) {
+                tbody.innerHTML = '<tr><td colspan="5" style="padding: 0.5rem; text-align: center;">No lessons found</td></tr>';
+                return;
+            }
+
+            lessons.data.forEach(lesson => {
+                const row = document.createElement('tr');
+                row.style.cursor = 'pointer';
+                row.innerHTML = `
+                    <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">${lesson.id}</td>
+                    <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">${lesson.subject}</td>
+                    <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">${lesson.topic}</td>
+                    <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">${lesson.pupilid}</td>
+                    <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">${lesson.pupilName}</td>
+                `;
+
+                row.addEventListener('click', () => {
+                    selectLesson(lesson.id, lesson.pupilid, lesson.subject, lesson.topic, lesson.pupilName);
+                });
+
+                row.addEventListener('mouseenter', () => {
+                    row.style.backgroundColor = '#f5f5f5';
+                });
+
+                row.addEventListener('mouseleave', () => {
+                    row.style.backgroundColor = '';
+                });
+
+                tbody.appendChild(row);
+            });
+        }
+
+        function selectLesson(lessonId, pupilId, subject, topic, pupilName) {
+            const lessonIdInput = document.getElementById('updateLessonId');
+            const pupilIdInput = document.getElementById('updatePupilId');
+            const display = document.getElementById('selectedLessonDisplay');
+
+            lessonIdInput.value = lessonId;
+            pupilIdInput.value = pupilId;
+            display.textContent = `${subject} - ${topic} (Lesson ID: ${lessonId}, ${pupilName})`;
+
+            selectedLessonId = lessonId;
+            selectedPupilId = pupilId;
+
+            hideLessonSelector();
+            fetchLessonDetails(); // Automatically fetch lesson details after selection
+        }
+
+        function toggleLessonSelector() {
+            const dropdown = document.getElementById('lessonSelectorDropdown');
+            if (dropdown.style.display === 'none') {
+                searchLessonsForSelector();
+                dropdown.style.display = 'block';
+            }
+        }
+
+        function hideLessonSelector() {
+            const dropdown = document.getElementById('lessonSelectorDropdown');
+            dropdown.style.display = 'none';
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const selectorContainer = document.querySelector('.lesson-selector-container');
+            const dropdown = document.getElementById('lessonSelectorDropdown');
+
+            if (selectorContainer && !selectorContainer.contains(event.target)) {
+                hideLessonSelector();
+            }
+        });
+
+        async function searchPupilsForSelector(searchText = '') {
+            const params = {
+                fullName: null,
+                interests: null,
+                personalityTraits: null,
+                fromBirthDate: null,
+                toBirthDate: null,
+                fromLessonsCount: null,
+                toLessonsCount: null,
+                page: 1,
+                count: 50,
+                sort: 'id',
+                sortDirection: 'asc'
+            };
+
+            try {
+                const response = await axios.get(`/api/pupils`, { params });
+                displayPupilsInDropdown(response.data);
+            } catch (error) {
+                console.error('Error fetching pupils:', error);
+                const tbody = document.getElementById('pupilSelectorBody');
+                tbody.innerHTML = '<tr><td colspan="2" style="padding: 0.5rem; text-align: center;">Error loading pupils</td></tr>';
+            }
+        }
+
+        function displayPupilsInDropdown(pupils) {
+            const tbody = document.getElementById('pupilSelectorBody');
+            tbody.innerHTML = '';
+
+            if (!pupils.data || !Array.isArray(pupils.data)) {
+                tbody.innerHTML = '<tr><td colspan="2" style="padding: 0.5rem; text-align: center;">No pupils found</td></tr>';
+                return;
+            }
+
+            pupils.data.forEach(pupil => {
+                const row = document.createElement('tr');
+                row.style.cursor = 'pointer';
+                row.innerHTML = `
+                    <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">${pupil.id}</td>
+                    <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">${pupil.fullname}</td>
+                `;
+
+                row.addEventListener('click', () => {
+                    selectPupil(pupil.id, pupil.fullname);
+                });
+
+                row.addEventListener('mouseenter', () => {
+                    row.style.backgroundColor = '#f5f5f5';
+                });
+
+                row.addEventListener('mouseleave', () => {
+                    row.style.backgroundColor = '';
+                });
+
+                tbody.appendChild(row);
+            });
+        }
+
+        function selectPupil(id, name) {
+            const hiddenInput = document.getElementById('newPupilId');
+            const display = document.getElementById('selectedPupilDisplay');
+            hiddenInput.value = id;
+            display.textContent = `${name} (ID: ${id})`;
+            selectedPupilId = id;
+            hidePupilSelector();
+        }
+
+        function togglePupilSelector() {
+            const dropdown = document.getElementById('pupilSelectorDropdown');
+            if (dropdown.style.display === 'none') {
+                searchPupilsForSelector();
+                dropdown.style.display = 'block';
+            }
+        }
+
+        function hidePupilSelector() {
+            const dropdown = document.getElementById('pupilSelectorDropdown');
+            dropdown.style.display = 'none';
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const selectorContainer = document.querySelector('.pupil-selector-container');
+            const dropdown = document.getElementById('pupilSelectorDropdown');
+
+            if (!selectorContainer.contains(event.target)) {
+                hidePupilSelector();
+            }
+        });
+
+        // Initialize pupil selector when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial load of pupils
+            searchPupilsForSelector();
+        });
 
         function displaySearchResults(responseData) {
             const resultsDiv = document.getElementById('searchResults');
@@ -862,7 +1178,7 @@
                 return;
             }
 
-            const url = `${API_BASE_URL}/${pupilId}/lessons`;
+            const url = `${API_BASE_URL}/${pupilId}/lessons`
             const loadingHandler = new LoadingStateHandler();
             const display = document.getElementById('taskStatus');
 

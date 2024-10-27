@@ -27,7 +27,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtTokenUtil jwtTokenUtil;
 
     // List of paths that don't require authentication
-    private List<String> excludedPaths = Arrays.asList("/", "/login.html", "/pupil.html", "/lesson.html", "/landing.html",
+    private List<String> excludedPaths = Arrays.asList("/", "/login.html", "/pupil.html", "/lesson.html", "/index.html",
+            "/favicon.ico",
             "/authenticate", "/user", "/actuator/", "/swagger-ui.html", "/api/swagger-ui.html", "/v2/api-docs",
             "/configuration/ui", "/swagger-resources/", "/configuration/security", "/webjars/");
 
