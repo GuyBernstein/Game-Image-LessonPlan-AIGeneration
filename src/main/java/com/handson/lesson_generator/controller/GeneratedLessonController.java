@@ -31,6 +31,7 @@ import static com.handson.lesson_generator.util.Strings.likeLowerOrNull;
 
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:8080", "https://pupil-lesson-generator.runmydocker-app.com"})
 @RequestMapping("/api/pupils/lessons")
 public class GeneratedLessonController {
 

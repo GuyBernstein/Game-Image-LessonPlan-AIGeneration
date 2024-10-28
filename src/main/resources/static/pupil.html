@@ -464,35 +464,35 @@
         <div style="display: flex; gap: 1rem; align-items: flex-end;">
             <div style="display: flex; flex-direction: column;">
                 <label for="getPupilId">Pupil ID</label>
-                <input type="number" id="getPupilId" placeholder="Enter pupil ID">
+                <div class="pupil-selector-container" style="position: relative;">
+                    <div class="pupil-select-button"
+                         onclick="toggleViewPupilSelector()"
+                         style="display: flex; justify-content: space-between; align-items: center; min-width: 250px; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; background: white; cursor: pointer;">
+                        <span id="viewSelectedPupilDisplay">Select a pupil</span>
+                        <input type="hidden" id="getPupilId" value="">
+                        <span>▼</span>
+                    </div>
+                    <div id="viewPupilSelectorDropdown" class="pupil-selector-dropdown"
+                         style="display: none; position: absolute; top: 100%; left: 0; width: 100%; max-height: 300px; overflow-y: auto; background: white; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 1000;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead>
+                            <tr>
+                                <th style="position: sticky; top: 0; background: white; padding: 0.5rem; border-bottom: 2px solid #ddd;">ID</th>
+                                <th style="position: sticky; top: 0; background: white; padding: 0.5rem; border-bottom: 2px solid #ddd;">Name</th>
+                            </tr>
+                            </thead>
+                            <tbody id="viewPupilSelectorBody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
             <button onclick="getOnePupil()" class="content-button">View Details</button>
         </div>
         <div id="getOnePupilResult" style="margin-top: 1rem;"></div>
 
-        <!-- Success message and lesson button container for View Details -->
+        <!-- Success message and lesson button container -->
         <div id="viewDetailsSuccessContainer" style="display: none; margin-top: 2rem;">
-            <div class="detail-card" style="background-color: var(--card-background); padding: 1.5rem; text-align: center;">
-                <h3 style="color: var(--primary-color); margin-bottom: 1rem;">Generate AI-Powered Lesson</h3>
-                <p style="color: var(--text-color); margin-bottom: 1.5rem;">
-                    Ready to create a customized lesson plan based on this pupil's interests and traits?
-                </p>
-                <button
-                        onclick="window.location.href='lesson.html'"
-                        class="content-button"
-                        style="
-                    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-                    padding: 0.75rem 2rem;
-                    font-size: 1.1rem;
-                    transform: translateY(0);
-                    transition: all 0.2s ease;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                ">
-                <span style="display: inline-flex; align-items: center; gap: 0.5rem;">
-                    Create Lesson Plan 🎯
-                </span>
-                </button>
-            </div>
+            <!-- ... rest of your success container code ... -->
         </div>
     </div>
 
@@ -636,6 +636,96 @@
         const jwtToken = localStorage.getItem('jwtToken');
 
         axios.defaults.headers.common['Authorization'] = `Bearer ${jwtToken}`;
+
+        let viewSelectedPupilId = null;
+
+        async function searchPupilsForViewSelector(searchText = '') {
+            const params = {
+                fullName: null,
+                interests: null,
+                personalityTraits: null,
+                fromBirthDate: null,
+                toBirthDate: null,
+                fromLessonsCount: null,
+                toLessonsCount: null,
+                page: 1,
+                count: 50,
+                sort: 'id',
+                sortDirection: 'asc'
+            };
+
+            try {
+                const response = await axios.get(`/api/pupils`, { params });
+                displayPupilsInViewDropdown(response.data);
+            } catch (error) {
+                 handleError(new Error(`Error fetching pupils:` + error), 'viewPupilSelectorBody', `Error loading pupils`)
+            }
+        }
+
+        function displayPupilsInViewDropdown(pupils) {
+            const tbody = document.getElementById('viewPupilSelectorBody');
+            tbody.innerHTML = '';
+
+            if (!pupils.data || !Array.isArray(pupils.data)) {
+                tbody.innerHTML = '<tr><td colspan="2" style="padding: 0.5rem; text-align: center;">No pupils found</td></tr>';
+                return;
+            }
+
+            pupils.data.forEach(pupil => {
+                const row = document.createElement('tr');
+                row.style.cursor = 'pointer';
+                row.innerHTML = `
+                    <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">${pupil.id}</td>
+                    <td style="padding: 0.5rem; border-bottom: 1px solid #ddd;">${pupil.fullname}</td>
+                `;
+
+                row.addEventListener('click', () => {
+                    selectViewPupil(pupil.id, pupil.fullname);
+                });
+
+                row.addEventListener('mouseenter', () => {
+                    row.style.backgroundColor = '#f5f5f5';
+                });
+
+                row.addEventListener('mouseleave', () => {
+                    row.style.backgroundColor = '';
+                });
+
+                tbody.appendChild(row);
+            });
+        }
+
+        function selectViewPupil(id, name) {
+            const hiddenInput = document.getElementById('getPupilId');
+            const display = document.getElementById('viewSelectedPupilDisplay');
+            hiddenInput.value = id;
+            display.textContent = `${name} (ID: ${id})`;
+            viewSelectedPupilId = id;
+            hideViewPupilSelector();
+        }
+
+        function toggleViewPupilSelector() {
+            const dropdown = document.getElementById('viewPupilSelectorDropdown');
+            if (dropdown.style.display === 'none') {
+                searchPupilsForViewSelector();
+                dropdown.style.display = 'block';
+            }
+        }
+
+        function hideViewPupilSelector() {
+            const dropdown = document.getElementById('viewPupilSelectorDropdown');
+            dropdown.style.display = 'none';
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const selectorContainer = document.querySelector('#getOnePupil .pupil-selector-container');
+            const dropdown = document.getElementById('viewPupilSelectorDropdown');
+
+            if (selectorContainer && !selectorContainer.contains(event.target)) {
+                hideViewPupilSelector();
+            }
+        });
 
         function displaySearchResults(responseData) {
             const resultsDiv = document.getElementById('searchResults');
