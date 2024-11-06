@@ -79,18 +79,18 @@ Watch a comprehensive explanation of the project's features and implementation i
 - POST /authenticate
 
 ### Content Generation Endpoints
-GET /api/pupils/lessons
-GET /api/pupils/lessons/{pupilId}/{lessonId}/display
-POST /api/pupils/lessons/{pupilId}/lessons
-GET /api/pupils/lessons/status/${taskId}
+- GET /api/pupils/lessons
+- GET /api/pupils/lessons/{pupilId}/{lessonId}/display
+- POST /api/pupils/lessons/{pupilId}/lessons
+- GET /api/pupils/lessons/status/${taskId}
 
 ### Pupil Management Endpoints
-GET /api/pupils
-POST /api/pupils
-GET /api/pupils/lessons/{pupilId}/{lessonId}/display
-PUT /api/pupils/{id}
-GET /api/pupils/{id}
-DELETE /api/pupils/{id}
+- GET /api/pupils
+- POST /api/pupils
+- GET /api/pupils/lessons/{pupilId}/{lessonId}/display
+- PUT /api/pupils/{id}
+- GET /api/pupils/{id}
+- DELETE /api/pupils/{id}
 
 ## Contributing
 Contributions are welcome! Please feel free to submit a Pull Request.
