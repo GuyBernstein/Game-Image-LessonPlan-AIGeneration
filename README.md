@@ -40,7 +40,7 @@
 ```bash
 # Clone the repository:
 git clone https://github.com/yourusername/ai-learning-hub.git
-```
+
 # Configure environment variables:
 spring.datasource.url=jdbc:postgresql:=your_postgresql_url/database
 SPRING_DATASOURCE_USERNAME=your_username
@@ -53,7 +53,7 @@ amazon.aws.accesskey==your_aws_access_key
 amazon.aws.secretkey==your_aws_secret_key
 bucket.url=your_bucket_url
 openai.api.key=your_openai_api_key
-
+```
 ## Demo & Documentation
 
 ### Live Demo
