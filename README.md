@@ -43,7 +43,7 @@ git clone https://github.com/yourusername/ai-learning-hub.git
 
 # Configure environment variables:
 spring.datasource.url=jdbc:postgresql:=your_postgresql_url/database
-SPRING_DATASOURCE_USERNAME=your_username
+spring.datasource.username=your_username
 spring.datasource.password=your_password
 spring.datasource.driver-class-name=org.postgresql.Driver
 spring.jpa.show-sql = true
