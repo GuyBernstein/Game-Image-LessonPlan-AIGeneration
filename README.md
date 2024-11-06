@@ -40,7 +40,7 @@
 ```bash
 # Clone the repository:
 git clone https://github.com/yourusername/ai-learning-hub.git
-
+```
 # Configure environment variables:
 spring.datasource.url=jdbc:postgresql:=your_postgresql_url/database
 SPRING_DATASOURCE_USERNAME=your_username
@@ -53,3 +53,48 @@ amazon.aws.accesskey==your_aws_access_key
 amazon.aws.secretkey==your_aws_secret_key
 bucket.url=your_bucket_url
 openai.api.key=your_openai_api_key
+
+## Demo & Documentation
+
+### Live Demo
+Access the live application at: https://pupil-lesson-generator.runmydocker-app.com/  
+(Please refresh the page if it doesn't load immediately)
+
+### Project Overview Video
+[![AI Learning Hub Overview](video_thumbnail.jpg)](https://www.youtube.com/watch?v=1flCuz2F4eM)
+
+Watch a comprehensive explanation of the project's features and implementation in this video overview. The demonstration covers:
+- System architecture and technology choices
+- AI content generation example
+- Student profile management
+- Real-time examples of generated content
+- JWT authentication + JWT.io explain
+- Docker + Dockerhub
+- runmydocker deployment
+
+## API Documentation
+
+### Authentication Endpoints
+POST /user
+POST /authenticate
+
+### Content Generation Endpoints
+GET /api/pupils/lessons
+GET /api/pupils/lessons/{pupilId}/{lessonId}/display
+POST /api/pupils/lessons/{pupilId}/lessons
+GET /api/pupils/lessons/status/${taskId}
+
+### Pupil Management Endpoints
+GET /api/pupils
+POST /api/pupils
+GET /api/pupils/lessons/{pupilId}/{lessonId}/display
+PUT /api/pupils/{id}
+GET /api/pupils/{id}
+DELETE /api/pupils/{id}
+
+## Contributing
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## Contact
+- Project Link: https://github.com/GuyBernstein/Game-Image-LessonPlan-AIGeneration
+- Public Site: https://pupil-lesson-generator.runmydocker-app.com/
