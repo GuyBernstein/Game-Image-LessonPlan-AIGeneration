@@ -75,8 +75,8 @@ Watch a comprehensive explanation of the project's features and implementation i
 ## API Documentation
 
 ### Authentication Endpoints
-POST /user
-POST /authenticate
+- POST /user
+- POST /authenticate
 
 ### Content Generation Endpoints
 GET /api/pupils/lessons
